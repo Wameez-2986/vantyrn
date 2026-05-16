@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { toast } from 'sonner';
 
 // Global cache to prevent flickering and loading states on navigation
@@ -26,14 +26,14 @@ export function useRealtime(apiUrl, options = {}) {
   const dataRef = useRef(realtimeCache.get(apiUrl) || null);
   const isInitialLoad = useRef(!realtimeCache.has(apiUrl));
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     // Optimization: Skip fetching if tab is hidden
     if (typeof document !== 'undefined' && document.hidden) {
       return;
     }
 
     try {
-      const res = await fetch(apiUrl);
+      const res = await fetch(apiUrl, { cache: 'no-store' });
       if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
       const newData = await res.json();
 
@@ -86,7 +86,7 @@ export function useRealtime(apiUrl, options = {}) {
       console.error(`[Realtime Polling Error - ${apiUrl}]:`, err);
       setConnected(false);
     }
-  };
+  }, [apiUrl, patchKey, toastConfig, onDataUpdate]);
 
   useEffect(() => {
     // Reset state when apiUrl changes
@@ -110,5 +110,5 @@ export function useRealtime(apiUrl, options = {}) {
     };
   }, [apiUrl, interval]);
 
-  return { data, loading, connected };
+  return { data, loading, connected, mutate: fetchData };
 }

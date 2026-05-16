@@ -196,10 +196,12 @@ export async function PATCH(request) {
 
 export async function DELETE() {
   const admin = await getAdmin();
+  console.log("DELETE notifications called by admin:", admin?.email);
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   try {
     await prisma.admin_notifications.updateMany({
+      where: {},
       data: { is_cleared: true }
     });
     return NextResponse.json({ success: true });

@@ -66,7 +66,7 @@ export default function Topbar({ onMenuClick }) {
     }
   };
   
-  const { data, loading } = useRealtime("/api/notifications", {
+  const { data, loading, mutate } = useRealtime("/api/notifications", {
     interval: 1000,
     toastConfig: {
       new: (n) => n.title,
@@ -84,6 +84,7 @@ export default function Topbar({ onMenuClick }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id })
       });
+      mutate();
     } catch (e) {
       console.error(e);
     }
@@ -91,11 +92,15 @@ export default function Topbar({ onMenuClick }) {
 
   const markAllAsRead = async () => {
     try {
-      await fetch('/api/notifications', {
+      const res = await fetch('/api/notifications', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({})
       });
+      if (res.ok) {
+        toast.success("All notifications marked as read");
+        mutate();
+      }
     } catch (e) {
       console.error(e);
     }
@@ -103,9 +108,16 @@ export default function Topbar({ onMenuClick }) {
 
   const clearAll = async () => {
     try {
-      await fetch('/api/notifications', { method: 'DELETE' });
+      const res = await fetch('/api/notifications', { method: 'DELETE' });
+      if (res.ok) {
+        toast.success("All notifications cleared");
+        mutate();
+      } else {
+        toast.error("Failed to clear notifications");
+      }
     } catch (e) {
       console.error(e);
+      toast.error("An error occurred while clearing notifications");
     }
   };
 
@@ -218,7 +230,10 @@ export default function Topbar({ onMenuClick }) {
             {notifications.length > 0 && (
               <div className="p-3 bg-zinc-50 border-t border-zinc-100">
                 <button 
-                  onClick={clearAll}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    clearAll();
+                  }}
                   className="w-full py-2 text-[10px] font-bold text-zinc-400 uppercase tracking-widest hover:text-red-500 transition-colors"
                 >
                   Clear all notifications
