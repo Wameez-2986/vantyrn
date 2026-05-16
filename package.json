@@ -41,6 +41,6 @@
         "typescript": "^6.0.3"
     },
     "prisma": {
-        "seed": "node prisma/seed.js"
+        "seed": "node prisma/seed.mjs"
     }
 }
