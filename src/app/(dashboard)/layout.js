@@ -3,11 +3,35 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "@/components/Sidebar";
 import Topbar from "@/components/Topbar";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
 
 export default function DashboardLayout({ children }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [authenticated, setAuthenticated] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const res = await fetch("/api/admin/me");
+        if (res.ok) {
+          setAuthenticated(true);
+        } else {
+          router.push("/admin-login");
+        }
+      } catch (error) {
+        console.error("Auth check failed:", error);
+        router.push("/admin-login");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkAuth();
+  }, [router]);
 
   // Close sidebar on navigation (mobile)
   useEffect(() => {
@@ -15,6 +39,26 @@ export default function DashboardLayout({ children }) {
   }, [pathname]);
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-swiggy-light dark:bg-zinc-950 flex flex-col items-center justify-center gap-4">
+        <div className="relative">
+          <div className="w-16 h-16 border-4 border-swiggy-orange/20 border-t-swiggy-orange rounded-full animate-spin" />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <span className="text-swiggy-orange font-bold text-xl italic">V</span>
+          </div>
+        </div>
+        <p className="text-swiggy-gray dark:text-zinc-500 font-bold uppercase tracking-widest text-[10px] animate-pulse">
+          Authenticating Secure Session...
+        </p>
+      </div>
+    );
+  }
+
+  if (!authenticated) {
+    return null; // Will redirect via useEffect
+  }
 
   return (
     <div className="flex min-h-screen bg-swiggy-light dark:bg-black transition-colors duration-300">

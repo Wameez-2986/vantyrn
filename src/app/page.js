@@ -23,7 +23,7 @@ export default function LandingPage() {
           </span>
         </div>
         <div className="flex items-center gap-4">
-          <Link href="/dashboard">
+          <Link href="/admin-login">
             <Button variant="ghost" className="font-semibold text-swiggy-navy dark:text-white uppercase tracking-wider text-xs">
               Portal Login
             </Button>
@@ -35,7 +35,7 @@ export default function LandingPage() {
       <main className="flex-1 flex flex-col items-center justify-center px-6 relative z-10 text-center">
         <div className="space-y-6 max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-8 duration-1000">
           <Badge className="bg-swiggy-orange/10 text-swiggy-orange border-swiggy-orange/20 px-4 py-1.5 font-bold uppercase tracking-widest text-[10px] mb-4">
-            Admin Portal 2.0
+            Admin Portal
           </Badge>
           
           <h1 className="text-6xl md:text-8xl font-bold text-swiggy-navy dark:text-white leading-[1.1] tracking-tighter">
@@ -47,15 +47,12 @@ export default function LandingPage() {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-8">
-            <Link href="/dashboard">
+            <Link href="/admin-login">
               <Button className="h-16 px-10 rounded-2xl bg-swiggy-orange hover:bg-swiggy-orange/90 text-white font-bold text-lg shadow-2xl shadow-swiggy-orange/30 group transition-all duration-300">
                 Get Started
                 <ArrowRight className="ml-3 w-6 h-6 group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>
-            <Button variant="outline" className="h-16 px-10 rounded-2xl border-2 border-zinc-200 dark:border-zinc-800 font-bold text-lg text-swiggy-navy dark:text-white hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-all duration-300">
-              Watch Demo
-            </Button>
           </div>
         </div>
 

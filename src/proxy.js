@@ -18,24 +18,14 @@ export async function proxy(request) {
   // 2. Get Token from Cookies
   const token = request.cookies.get("admin_token")?.value;
 
-  // 3. Handle Public Paths (Redirect if already logged in)
+  // 3. Handle Public Paths
   if (isPublicPage || isPublicApi) {
-    if (token) {
-      try {
-        await jwtVerify(token, secretKey);
-        // Valid session exists, don't allow re-login
-        if (isPublicPage) {
-          return NextResponse.redirect(new URL("/dashboard", request.url));
-        }
-      } catch (e) {
-        // Token invalid, allow access to login page
-      }
-    }
+    // Note: We removed the auto-redirect to /dashboard if logged in.
+    // This allows the user to see the login page even if they have a session.
     return NextResponse.next();
   }
 
   // 4. Define Protected Paths
-  // We protect the main dashboard areas and all administrative APIs
   const isProtectedRoute = 
     pathname.startsWith("/dashboard") || 
     pathname.startsWith("/vendors") ||
@@ -60,7 +50,7 @@ export async function proxy(request) {
       // Verify token
       const { payload } = await jwtVerify(token, secretKey);
       
-      // Basic security check: ensure it has admin role if we set it
+      // Basic security check: ensure it has admin role
       if (payload.role !== "admin") {
         throw new Error("Invalid role");
       }
@@ -83,7 +73,7 @@ export async function proxy(request) {
   return NextResponse.next();
 }
 
-// Config to match only the paths we care about for performance
+// Config to match only the paths we care about
 export const config = {
   matcher: [
     "/((?!_next/static|_next/image|favicon.ico).*)",

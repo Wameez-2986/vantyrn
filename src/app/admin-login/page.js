@@ -86,22 +86,7 @@ export default function AdminLoginPage() {
               Login to access the mission control for your food delivery ecosystem.
             </p>
           </div>
-
-          <div className="relative z-10">
-            <div className="flex -space-x-4 mb-4">
-              {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="w-10 h-10 rounded-full border-2 border-swiggy-navy bg-zinc-800" />
-              ))}
-              <div className="w-10 h-10 rounded-full border-2 border-swiggy-navy bg-swiggy-orange flex items-center justify-center text-[10px] font-black text-white">
-                +12
-              </div>
-            </div>
-            <p className="text-xs text-zinc-500 font-bold uppercase tracking-widest">
-              Active Admins Online
-            </p>
-          </div>
         </div>
-
         {/* Right Side: Login Form */}
         <div className="p-8 md:p-16 flex flex-col justify-center bg-white dark:bg-zinc-900">
           <div className="md:hidden mb-12 flex justify-center">
