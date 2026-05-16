@@ -516,39 +516,62 @@ export default function VendorDetailPage() {
 
           <div className="space-y-6">
             {/* 2. Delivery Integration Card */}
-            <Card className="rounded-3xl border-zinc-100 shadow-sm overflow-hidden">
-               <CardHeader className="p-8 border-b border-zinc-50 bg-swiggy-navy">
-                 <CardTitle className="text-lg font-black text-white inline-flex items-center gap-2">
-                   <Store className="w-5 h-5 text-swiggy-orange" /> Shadowfax Delivery Integration
+            <Card className="rounded-[2.5rem] border-zinc-100 shadow-xl overflow-hidden group hover:shadow-2xl transition-all duration-500">
+               <CardHeader className="p-8 border-b border-zinc-50 bg-swiggy-navy relative overflow-hidden">
+                 <div className="absolute top-0 right-0 w-32 h-32 bg-swiggy-orange/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
+                 <CardTitle className="text-xl font-black text-white inline-flex items-center gap-3 relative z-10">
+                   <div className="w-10 h-10 bg-swiggy-orange/20 rounded-xl flex items-center justify-center border border-swiggy-orange/30">
+                     <Store className="w-5 h-5 text-swiggy-orange" />
+                   </div>
+                   Shadowfax Delivery Integration
                  </CardTitle>
                </CardHeader>
-               <CardContent className="p-8 space-y-6">
-                 <div className="space-y-3">
-                   <Label className="text-[10px] font-black uppercase tracking-widest text-swiggy-gray">Shadowfax Store Code</Label>
-                   <div className="flex gap-2">
-                     <input 
-                       type="text"
-                       value={sfxCode}
-                       onChange={(e) => setSfxCode(e.target.value)}
-                       className="flex-1 h-12 rounded-xl border border-zinc-200 px-4 font-bold focus:ring-2 focus:ring-swiggy-orange outline-none uppercase"
-                       placeholder="e.g. SFX_ST_9988"
-                     />
-                     <Button 
-                       className="h-12 bg-swiggy-orange hover:bg-swiggy-orange/90 text-white font-black px-6 rounded-xl"
-                       onClick={handleLinkShadowfax}
-                       disabled={isLinking}
-                     >
-                       {isLinking ? "Linking..." : "Link ID"}
-                     </Button>
+               <CardContent className="p-8 space-y-8">
+                 <div className="space-y-4">
+                   <div className="flex flex-col gap-2">
+                     <Label className="text-xs font-black uppercase tracking-[0.15em] text-swiggy-gray ml-1">Shadowfax Store Code</Label>
+                     <div className="flex flex-col gap-4">
+                        <input 
+                          type="text"
+                          value={sfxCode}
+                          onChange={(e) => setSfxCode(e.target.value)}
+                          className="w-full h-14 rounded-2xl border-2 border-zinc-100 bg-zinc-50/50 px-6 font-black text-lg text-swiggy-navy focus:border-swiggy-orange focus:bg-white outline-none transition-all uppercase placeholder:text-zinc-300"
+                          placeholder="SFX1234545"
+                        />
+                        <Button 
+                          className="w-full h-14 bg-swiggy-orange hover:bg-swiggy-orange/90 text-white font-black px-8 rounded-2xl shadow-lg shadow-swiggy-orange/20 group transition-all duration-300"
+                          onClick={handleLinkShadowfax}
+                          disabled={isLinking}
+                        >
+                          {isLinking ? (
+                            <span className="flex items-center gap-2">
+                              <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                              Linking Store...
+                            </span>
+                          ) : (
+                            <span className="flex items-center gap-2">
+                              Update Store ID
+                              <CheckCircle2 className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                            </span>
+                          )}
+                        </Button>
+                     </div>
                    </div>
                  </div>
 
-                 <div className="pt-6 border-t border-zinc-50 flex items-center justify-between">
-                   <span className="text-[10px] font-black uppercase tracking-widest text-swiggy-gray">Integration Status</span>
+                 <div className="pt-8 border-t border-zinc-100 flex items-center justify-between">
+                   <div className="flex flex-col gap-1">
+                     <span className="text-xs font-black uppercase tracking-widest text-swiggy-navy">Integration Status</span>
+                     <p className="text-[10px] font-bold text-swiggy-gray uppercase">Last checked: Today at 2:45 PM</p>
+                   </div>
                    {vendor.shadowfaxLinked ? (
-                     <Badge className="bg-emerald-100 text-emerald-700 border-emerald-200 font-bold px-3 py-1">Linked</Badge>
+                     <Badge className="h-10 px-6 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-100 font-black text-xs uppercase tracking-widest shadow-sm">
+                       Linked
+                     </Badge>
                    ) : (
-                     <Badge className="bg-zinc-100 text-zinc-500 border-zinc-200 font-bold px-3 py-1">Not Linked</Badge>
+                     <Badge className="h-10 px-6 rounded-full bg-zinc-50 text-zinc-400 border border-zinc-100 font-black text-xs uppercase tracking-widest">
+                       Not Linked
+                     </Badge>
                    )}
                  </div>
                </CardContent>
@@ -599,16 +622,15 @@ export default function VendorDetailPage() {
                <CardHeader className="p-8 border-b border-zinc-50 bg-swiggy-navy">
                  <div className="flex items-center justify-between">
                    <CardTitle className="text-lg font-black text-white inline-flex items-center gap-2">
-                     <CreditCard className="w-5 h-5 text-swiggy-orange" /> Commission Settings
-                   </CardTitle>
-                   <Button 
-                    size="sm" 
-                    variant="outline"
-                    className="h-8 border-white/20 text-white hover:bg-white/10 font-bold rounded-lg"
-                    onClick={() => setIsCommissionDialogOpen(true)}
-                   >
-                     Update
-                   </Button>
+                      <CreditCard className="w-5 h-5 text-swiggy-orange" /> Commission Settings
+                    </CardTitle>
+                    <Button 
+                     size="sm" 
+                     className="h-8 bg-swiggy-orange hover:bg-swiggy-orange/90 text-white font-black rounded-lg shadow-sm"
+                     onClick={() => setIsCommissionDialogOpen(true)}
+                    >
+                      Update
+                    </Button>
                  </div>
                </CardHeader>
                <CardContent className="p-6">
@@ -763,8 +785,7 @@ export default function VendorDetailPage() {
                           </div>
                        </div>
                        <Button 
-                          variant="outline" 
-                          className="rounded-xl font-bold h-11 gap-2 border-zinc-200"
+                          variant="outline" className="rounded-xl font-bold h-11 gap-2 border-zinc-200"
                           onClick={() => {
                             let url = doc.url;
                             if (!url) return;
