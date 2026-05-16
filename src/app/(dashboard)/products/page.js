@@ -494,22 +494,23 @@ export default function ProductsPage() {
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       {/* Header Area */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-black text-swiggy-navy dark:text-white tracking-tight">Products</h1>
-          <p className="text-sm text-swiggy-gray font-medium mt-1">Review pending items and manage the menu catalog</p>
+          <h1 className="text-2xl sm:text-3xl font-black text-swiggy-navy dark:text-white tracking-tight">Products</h1>
+          <p className="text-xs sm:text-sm text-swiggy-gray font-medium mt-1">Review pending items and manage the menu catalog</p>
         </div>
-        <div className="flex items-center gap-3">
-          <Link href="/templates">
-            <Button variant="outline" className="border-zinc-200 text-swiggy-navy font-bold rounded-xl h-12 gap-2 shadow-sm">
-              <Settings2 className="w-5 h-5" />
-              Manage BYO Templates
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+          <Link href="/templates" className="flex-1 sm:flex-none">
+            <Button variant="outline" className="w-full sm:w-auto border-zinc-200 text-swiggy-navy font-bold rounded-xl h-10 sm:h-12 gap-2 shadow-sm text-xs sm:text-sm">
+              <Settings2 className="w-4 h-4 sm:w-5 sm:h-5" />
+              <span className="hidden xs:inline">Manage BYO Templates</span>
+              <span className="xs:hidden">Templates</span>
             </Button>
           </Link>
           <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
-            <DialogTrigger asChild>
-              <Button className="bg-swiggy-orange hover:bg-swiggy-orange/90 text-white font-black px-6 rounded-xl h-12 gap-2 shadow-lg shadow-swiggy-orange/20">
-                <Plus className="w-5 h-5" />
+            <DialogTrigger asChild className="flex-1 sm:flex-none">
+              <Button className="w-full sm:w-auto bg-swiggy-orange hover:bg-swiggy-orange/90 text-white font-black px-4 sm:px-6 rounded-xl h-10 sm:h-12 gap-2 shadow-lg shadow-swiggy-orange/20 text-xs sm:text-sm">
+                <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
                 Add Product
               </Button>
             </DialogTrigger>
@@ -521,8 +522,8 @@ export default function ProductsPage() {
                   Added products will be automatically approved.
                 </DialogDescription>
               </DialogHeader>
-              <div className="grid grid-cols-2 gap-6 py-6 border-y border-zinc-100 my-4 overflow-y-auto flex-1 pr-1">
-                <div className="col-span-2 space-y-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 py-4 sm:py-6 border-y border-zinc-100 my-4 overflow-y-auto flex-1 pr-1">
+                <div className="md:col-span-2 space-y-2">
                   <Label htmlFor="name" className="font-bold">Product Name</Label>
                   <Input id="name" name="name" placeholder="e.g. Garlic Naan" required />
                 </div>
@@ -612,11 +613,11 @@ export default function ProductsPage() {
                     <button type="button" className="text-xs text-red-500 font-bold mt-1" onClick={() => { setAddImageFile(null); setAddImagePreview(""); }}>Remove image</button>
                   )}
                 </div>
-                <div className="col-span-2 space-y-2">
+                <div className="md:col-span-2 space-y-2">
                   <Label htmlFor="description" className="font-bold">Description</Label>
                   <Textarea id="description" name="description" placeholder="Product details..." />
                 </div>
-                <div className="col-span-2 flex flex-col gap-4 border-t border-zinc-100 pt-4">
+                <div className="md:col-span-2 flex flex-col gap-4 border-t border-zinc-100 pt-4">
                   <div className="flex flex-col gap-3">
                     <Label className="font-bold text-swiggy-navy">Customization Type</Label>
                     <div className="flex flex-wrap items-center gap-6">
@@ -819,8 +820,8 @@ export default function ProductsPage() {
                   Modify details for {selectedProduct.name}.
                 </DialogDescription>
               </DialogHeader>
-              <div className="grid grid-cols-2 gap-6 py-6 border-y border-zinc-100 my-4 overflow-y-auto flex-1 pr-1">
-                <div className="col-span-2 space-y-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 py-4 sm:py-6 border-y border-zinc-100 my-4 overflow-y-auto flex-1 pr-1">
+                <div className="md:col-span-2 space-y-2">
                   <Label htmlFor="edit-name" className="font-bold">Product Name</Label>
                   <Input id="edit-name" name="name" defaultValue={selectedProduct.name} required />
                 </div>
@@ -896,11 +897,11 @@ export default function ProductsPage() {
                     <button type="button" className="text-xs text-red-500 font-bold mt-1" onClick={() => { setEditImageFile(null); setEditImagePreview(""); }}>Remove new image</button>
                   )}
                 </div>
-                <div className="col-span-2 space-y-2">
+                <div className="md:col-span-2 space-y-2">
                   <Label htmlFor="edit-description" className="font-bold">Description</Label>
                   <Textarea id="edit-description" name="description" defaultValue={selectedProduct.description} placeholder="Product details..." />
                 </div>
-                <div className="col-span-2 flex items-center gap-2">
+                <div className="md:col-span-2 flex items-center gap-2">
                   <input type="checkbox" id="edit-is_customizable" name="is_customizable" defaultChecked={selectedProduct.is_customizable} className="w-4 h-4 rounded border-zinc-300 text-swiggy-orange focus:ring-swiggy-orange" />
                   <Label htmlFor="edit-is_customizable" className="font-bold">Is Customizable (Build Your Own)</Label>
                 </div>
@@ -934,7 +935,7 @@ export default function ProductsPage() {
       </Dialog>
 
       {/* Filters & Table Area */}
-      <div className="bg-white dark:bg-zinc-950 rounded-3xl border border-zinc-100 dark:border-zinc-800 p-8 shadow-sm space-y-6">
+      <div className="bg-white dark:bg-zinc-950 rounded-2xl sm:rounded-3xl border border-zinc-100 dark:border-zinc-800 p-4 sm:p-8 shadow-sm space-y-6">
         <div className="flex flex-col md:flex-row gap-4">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-swiggy-gray" />
@@ -959,7 +960,8 @@ export default function ProductsPage() {
           </Select>
         </div>
 
-        <div className="rounded-2xl border border-zinc-100 overflow-hidden">
+        <div className="responsive-table-container mt-6">
+          <div className="rounded-2xl border border-zinc-100 overflow-hidden min-w-[1000px]">
           <Table>
             <TableHeader className="bg-zinc-50 dark:bg-zinc-900">
               {table.getHeaderGroups().map((headerGroup) => (
@@ -993,6 +995,7 @@ export default function ProductsPage() {
             </TableBody>
           </Table>
         </div>
+      </div>
 
         {/* Pagination */}
         <div className="flex items-center justify-between pt-4 border-t border-zinc-50">

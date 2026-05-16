@@ -281,10 +281,10 @@ export default function VendorsPage() {
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       {/* Header Area */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-black text-swiggy-navy dark:text-white tracking-tight">Vendors</h1>
-          <p className="text-sm text-swiggy-gray font-medium mt-1">Manage your restaurant partners and KYC reviews</p>
+          <h1 className="text-2xl sm:text-3xl font-black text-swiggy-navy dark:text-white tracking-tight">Vendors</h1>
+          <p className="text-xs sm:text-sm text-swiggy-gray font-medium mt-1">Manage your restaurant partners and KYC reviews</p>
         </div>
         
         <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
@@ -294,12 +294,12 @@ export default function VendorsPage() {
               Add Vendor
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto rounded-3xl p-0 border-none shadow-2xl">
+          <DialogContent className="sm:max-w-[800px] w-[calc(100%-2rem)] max-h-[90vh] overflow-y-auto rounded-3xl p-0 border-none shadow-2xl">
             <form onSubmit={handleAddVendor}>
-              <div className="bg-swiggy-navy p-8 text-white">
+              <div className="bg-swiggy-navy p-6 sm:p-8 text-white">
                 <DialogHeader>
-                  <DialogTitle className="text-3xl font-black tracking-tight">Add New Vendor</DialogTitle>
-                  <DialogDescription className="text-zinc-400 font-medium text-lg">
+                  <DialogTitle className="text-2xl sm:text-3xl font-black tracking-tight text-white">Add New Vendor</DialogTitle>
+                  <DialogDescription className="text-zinc-400 font-medium text-base sm:text-lg">
                     Step {currentStep} of 3: {currentStep === 1 ? "Vendor Details" : currentStep === 2 ? "Bank Details" : "KYC Verification"}
                   </DialogDescription>
                 </DialogHeader>
@@ -317,9 +317,9 @@ export default function VendorsPage() {
                 </div>
               </div>
 
-              <div className="p-8">
+              <div className="p-6 sm:p-8">
                 {currentStep === 1 && (
-                  <div className="grid grid-cols-2 gap-6 animate-in slide-in-from-right-4 duration-300">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 animate-in slide-in-from-right-4 duration-300">
                     <div className="space-y-2">
                       <Label htmlFor="businessName" className="font-bold text-zinc-700">Business Name *</Label>
                       <Input 
@@ -365,7 +365,7 @@ export default function VendorsPage() {
                         className="h-12 rounded-xl border-zinc-200"
                       />
                     </div>
-                    <div className="col-span-2 space-y-2">
+                    <div className="md:col-span-2 space-y-2">
                       <Label htmlFor="address" className="font-bold text-zinc-700">Business Address *</Label>
                       <Textarea 
                         id="address" 
@@ -425,7 +425,7 @@ export default function VendorsPage() {
                         setFormData(prev => ({ ...prev, address }));
                       }}
                     />
-                    <div className="col-span-2 space-y-2">
+                    <div className="md:col-span-2 space-y-2">
                       <Label htmlFor="description" className="font-bold text-zinc-700">Store Description (Optional)</Label>
                       <Textarea 
                         id="description" 
@@ -439,8 +439,8 @@ export default function VendorsPage() {
                 )}
 
                 {currentStep === 2 && (
-                  <div className="grid grid-cols-2 gap-6 animate-in slide-in-from-right-4 duration-300">
-                    <div className="col-span-2 space-y-2">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 animate-in slide-in-from-right-4 duration-300">
+                    <div className="md:col-span-2 space-y-2">
                       <Label htmlFor="accountHolderName" className="font-bold text-zinc-700">Account Holder Name *</Label>
                       <Input 
                         id="accountHolderName" 
@@ -501,7 +501,7 @@ export default function VendorsPage() {
                   <div className="grid grid-cols-1 gap-6 animate-in slide-in-from-right-4 duration-300">
                     <p className="text-zinc-500 font-medium">Please upload clear copies of the following documents to activate the account.</p>
                     
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="p-4 rounded-2xl border-2 border-dashed border-zinc-100 space-y-2 hover:border-swiggy-orange/30 transition-colors">
                         <Label htmlFor="govId" className="font-bold block">Government ID *</Label>
                         <p className="text-[10px] text-zinc-400">Passport, License, or National ID</p>
@@ -608,7 +608,8 @@ export default function VendorsPage() {
           </Select>
         </div>
 
-        <div className="rounded-2xl border border-zinc-100 overflow-hidden">
+        <div className="responsive-table-container">
+          <div className="rounded-2xl border border-zinc-100 overflow-hidden min-w-[1000px]">
           <Table>
             <TableHeader className="bg-zinc-50 dark:bg-zinc-900">
               {table.getHeaderGroups().map((headerGroup) => (
@@ -652,6 +653,7 @@ export default function VendorsPage() {
             </TableBody>
           </Table>
         </div>
+      </div>
 
         {/* Pagination */}
         <div className="flex items-center justify-between pt-4 border-t border-zinc-50">

@@ -196,35 +196,39 @@ export default function PaymentsPage() {
   );
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
+    <div className="space-y-6 sm:space-y-8 animate-in fade-in duration-500">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-3">
-            <h1 className="text-3xl font-black text-swiggy-navy dark:text-white tracking-tight italic uppercase">Marketplace Financials</h1>
-            <Badge className="bg-amber-100 text-amber-700 border-amber-200 font-black text-[10px] uppercase tracking-widest px-3">Sandbox Mode</Badge>
+          <div className="flex items-center flex-wrap gap-2 sm:gap-3">
+            <h1 className="text-2xl sm:text-3xl font-black text-swiggy-navy dark:text-white tracking-tight italic uppercase">Marketplace Financials</h1>
+            <Badge className="bg-amber-100 text-amber-700 border-amber-200 font-black text-[9px] sm:text-[10px] uppercase tracking-widest px-2 sm:px-3">Sandbox Mode</Badge>
           </div>
-          <p className="text-swiggy-gray font-bold text-sm uppercase tracking-widest mt-1">Real-time revenue, commissions and vendor settlements</p>
+          <p className="text-swiggy-gray font-bold text-xs uppercase tracking-widest mt-1">Real-time revenue, commissions and vendor settlements</p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           <Button 
             variant="outline" 
-            className="rounded-xl border-blue-200 text-blue-600 hover:bg-blue-50 gap-2 font-bold"
+            className="flex-1 sm:flex-none rounded-lg sm:rounded-xl border-blue-200 text-blue-600 hover:bg-blue-50 gap-2 font-bold h-10 sm:h-12 text-xs sm:text-sm"
             onClick={() => setIsRefundOpen(true)}
           >
-            <RefreshCcw className="w-4 h-4" /> Issue Refund
+            <RefreshCcw className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> 
+            <span className="hidden xs:inline">Issue Refund</span>
+            <span className="xs:hidden">Refund</span>
           </Button>
           <Button 
-            className="bg-swiggy-orange hover:bg-swiggy-orange/90 text-white rounded-xl shadow-lg shadow-swiggy-orange/20 gap-2 font-black uppercase tracking-widest"
+            className="flex-1 sm:flex-none bg-swiggy-orange hover:bg-swiggy-orange/90 text-white rounded-lg sm:rounded-xl shadow-lg shadow-swiggy-orange/20 gap-2 font-black uppercase tracking-widest h-10 sm:h-12 text-xs sm:text-sm"
             onClick={() => setIsPayoutOpen(true)}
           >
-            <Landmark className="w-4 h-4" /> Run Payouts
+            <Landmark className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> 
+            <span className="hidden xs:inline">Run Payouts</span>
+            <span className="xs:hidden">Payouts</span>
           </Button>
         </div>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         {[
           { label: "Gross Revenue", value: `₹${stats.totalRevenue.toLocaleString()}`, icon: ArrowUpRight, color: "text-emerald-500", bg: "bg-emerald-50", desc: "Total customer payments" },
           { label: "Admin Profits", value: `₹${stats.adminProfit.toLocaleString()}`, icon: ShieldCheck, color: "text-blue-500", bg: "bg-blue-50", desc: "Retained commissions" },
@@ -232,151 +236,153 @@ export default function PaymentsPage() {
           { label: "Settled Funds", value: `₹${stats.completedPayouts.toLocaleString()}`, icon: ArrowDownLeft, color: "text-purple-500", bg: "bg-purple-50", desc: "Total vendor transfers" }
         ].map((stat, i) => (
           <Card key={i} className="border-none shadow-sm overflow-hidden group hover:shadow-md transition-all duration-300">
-            <CardContent className="p-6">
+            <CardContent className="p-4 sm:p-6">
               <div className="flex items-center justify-between mb-4">
-                <div className={cn("p-3 rounded-2xl", stat.bg)}>
-                  <stat.icon className={cn("w-6 h-6", stat.color)} />
+                <div className={cn("p-2 sm:p-3 rounded-xl sm:rounded-2xl", stat.bg)}>
+                  <stat.icon className={cn("w-5 h-5 sm:w-6 sm:h-6", stat.color)} />
                 </div>
                 <div className="text-right">
-                  <p className="text-[10px] font-black text-swiggy-gray uppercase tracking-widest">{stat.label}</p>
-                  <p className="text-2xl font-black text-swiggy-navy dark:text-white mt-1 group-hover:scale-105 transition-transform">{stat.value}</p>
+                  <p className="text-[9px] sm:text-[10px] font-black text-swiggy-gray uppercase tracking-widest">{stat.label}</p>
+                  <p className="text-xl sm:text-2xl font-black text-swiggy-navy dark:text-white mt-1 group-hover:scale-105 transition-transform">{stat.value}</p>
                 </div>
               </div>
-              <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-tighter italic">{stat.desc}</p>
+              <p className="text-[9px] sm:text-[10px] font-bold text-zinc-400 uppercase tracking-tighter italic">{stat.desc}</p>
             </CardContent>
           </Card>
         ))}
       </div>
 
       {/* Transactions Table */}
-      <Card className="border-none shadow-xl overflow-hidden rounded-[2rem]">
-        <CardHeader className="bg-white dark:bg-zinc-950 border-b border-zinc-100 dark:border-zinc-800 p-8">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <Card className="border-none shadow-xl overflow-hidden rounded-2xl sm:rounded-[2rem]">
+        <CardHeader className="bg-white dark:bg-zinc-950 border-b border-zinc-100 dark:border-zinc-800 p-4 sm:p-8">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             <div>
-              <CardTitle className="text-xl font-black text-swiggy-navy dark:text-white uppercase tracking-tight">Transaction Ledger</CardTitle>
-              <CardDescription className="text-xs font-bold uppercase tracking-widest mt-1">Complete financial audit log</CardDescription>
+              <CardTitle className="text-lg sm:text-xl font-black text-swiggy-navy dark:text-white uppercase tracking-tight">Transaction Ledger</CardTitle>
+              <CardDescription className="text-[10px] sm:text-xs font-bold uppercase tracking-widest mt-1">Complete financial audit log</CardDescription>
             </div>
-            <div className="flex items-center gap-3 w-full md:w-auto">
-              <div className="relative flex-1 md:w-64">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-swiggy-gray" />
+            <div className="flex items-center gap-2 sm:gap-3 w-full lg:w-auto">
+              <div className="relative flex-1 lg:w-64">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 sm:w-4 sm:h-4 text-swiggy-gray" />
                 <Input 
-                  placeholder="Filter by TXN, Order or Type..." 
-                  className="pl-10 h-12 rounded-xl border-zinc-200 focus:border-swiggy-orange/50 transition-all font-medium"
+                  placeholder="Filter transactions..." 
+                  className="pl-10 h-10 sm:h-12 rounded-lg sm:rounded-xl border-zinc-200 focus:border-swiggy-orange/50 transition-all text-sm font-medium"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                 />
               </div>
-              <Button variant="outline" size="icon" className="h-12 w-12 rounded-xl border-zinc-200">
+              <Button variant="outline" size="icon" className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg sm:rounded-xl border-zinc-200 shrink-0">
                 <Filter className="w-4 h-4" />
               </Button>
             </div>
           </div>
         </CardHeader>
         <CardContent className="p-0">
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader className="bg-zinc-50 dark:bg-zinc-900/50">
-                <TableRow className="hover:bg-transparent border-none">
-                  <TableHead className="font-bold text-swiggy-navy dark:text-white text-[10px] uppercase tracking-widest pl-8 py-5">Txn Reference</TableHead>
-                  <TableHead className="font-bold text-swiggy-navy dark:text-white text-[10px] uppercase tracking-widest">Type / Gateway</TableHead>
-                  <TableHead className="font-bold text-swiggy-navy dark:text-white text-[10px] uppercase tracking-widest">Customer / Order</TableHead>
-                  <TableHead className="font-bold text-swiggy-navy dark:text-white text-[10px] uppercase tracking-widest">Amount</TableHead>
-                  <TableHead className="font-bold text-swiggy-navy dark:text-white text-[10px] uppercase tracking-widest">Status</TableHead>
-                  <TableHead className="font-bold text-swiggy-navy dark:text-white text-[10px] uppercase tracking-widest">Timestamp</TableHead>
-                  <TableHead className="text-right pr-8 font-bold text-swiggy-navy dark:text-white text-[10px] uppercase tracking-widest">Action</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {loading ? (
-                  Array(5).fill(0).map((_, i) => (
-                    <TableRow key={i} className="animate-pulse">
-                      <TableCell className="pl-8"><div className="h-4 w-32 bg-zinc-100 rounded" /></TableCell>
-                      <TableCell><div className="h-4 w-24 bg-zinc-100 rounded" /></TableCell>
-                      <TableCell><div className="h-4 w-20 bg-zinc-100 rounded" /></TableCell>
-                      <TableCell><div className="h-4 w-16 bg-zinc-100 rounded" /></TableCell>
-                      <TableCell><div className="h-6 w-20 bg-zinc-100 rounded-full" /></TableCell>
-                      <TableCell><div className="h-4 w-24 bg-zinc-100 rounded" /></TableCell>
-                      <TableCell className="text-right pr-8"><div className="h-8 w-8 bg-zinc-100 rounded-lg ml-auto" /></TableCell>
-                    </TableRow>
-                  ))
-                ) : filteredTxns.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={7} className="h-64 text-center">
-                      <div className="flex flex-col items-center justify-center space-y-3 opacity-20">
-                        <CreditCard className="w-16 h-16" />
-                        <p className="text-lg font-black uppercase tracking-tighter">No Financial Logs Found</p>
-                      </div>
-                    </TableCell>
+          <div className="responsive-table-container">
+            <div className="min-w-[1000px]">
+              <Table>
+                <TableHeader className="bg-zinc-50 dark:bg-zinc-900/50">
+                  <TableRow className="hover:bg-transparent border-none">
+                    <TableHead className="font-bold text-swiggy-navy dark:text-white text-[10px] uppercase tracking-widest pl-8 py-5">Txn Reference</TableHead>
+                    <TableHead className="font-bold text-swiggy-navy dark:text-white text-[10px] uppercase tracking-widest">Type / Gateway</TableHead>
+                    <TableHead className="font-bold text-swiggy-navy dark:text-white text-[10px] uppercase tracking-widest">Customer / Order</TableHead>
+                    <TableHead className="font-bold text-swiggy-navy dark:text-white text-[10px] uppercase tracking-widest">Amount</TableHead>
+                    <TableHead className="font-bold text-swiggy-navy dark:text-white text-[10px] uppercase tracking-widest">Status</TableHead>
+                    <TableHead className="font-bold text-swiggy-navy dark:text-white text-[10px] uppercase tracking-widest">Timestamp</TableHead>
+                    <TableHead className="text-right pr-8 font-bold text-swiggy-navy dark:text-white text-[10px] uppercase tracking-widest">Action</TableHead>
                   </TableRow>
-                ) : (
-                  filteredTxns.map((txn) => (
-                    <TableRow key={txn.id} className="group hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition-colors border-zinc-50 dark:border-zinc-800">
-                      <TableCell className="pl-8 py-5">
-                        <div className="flex flex-col">
-                          <span className="font-mono text-[11px] font-black text-swiggy-navy dark:text-white uppercase truncate max-w-[150px]">{txn.txn_id || "N/A"}</span>
-                          <span className="text-[9px] font-bold text-zinc-400 mt-0.5 uppercase tracking-tighter">Reference ID</span>
+                </TableHeader>
+                <TableBody>
+                  {loading ? (
+                    Array(5).fill(0).map((_, i) => (
+                      <TableRow key={i} className="animate-pulse">
+                        <TableCell className="pl-8"><div className="h-4 w-32 bg-zinc-100 rounded" /></TableCell>
+                        <TableCell><div className="h-4 w-24 bg-zinc-100 rounded" /></TableCell>
+                        <TableCell><div className="h-4 w-20 bg-zinc-100 rounded" /></TableCell>
+                        <TableCell><div className="h-4 w-16 bg-zinc-100 rounded" /></TableCell>
+                        <TableCell><div className="h-6 w-20 bg-zinc-100 rounded-full" /></TableCell>
+                        <TableCell><div className="h-4 w-24 bg-zinc-100 rounded" /></TableCell>
+                        <TableCell className="text-right pr-8"><div className="h-8 w-8 bg-zinc-100 rounded-lg ml-auto" /></TableCell>
+                      </TableRow>
+                    ))
+                  ) : filteredTxns.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={7} className="h-64 text-center">
+                        <div className="flex flex-col items-center justify-center space-y-3 opacity-20">
+                          <CreditCard className="w-16 h-16" />
+                          <p className="text-lg font-black uppercase tracking-tighter">No Financial Logs Found</p>
                         </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="secondary" className="bg-zinc-100 text-zinc-600 border-none font-bold text-[9px] px-2 py-0.5 uppercase tracking-tighter">
-                          {getGatewayIcon(txn.gateway)}
-                          {txn.gateway.replace('_', ' ')}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex flex-col">
-                          <span className="text-xs font-black text-swiggy-navy dark:text-white">{txn.orders?.customers?.full_name || "Merchant Payout"}</span>
-                          <span className="text-[10px] font-bold text-swiggy-gray uppercase tracking-tighter">{txn.order_id.slice(0, 8).toUpperCase()}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <span className={cn(
-                          "text-sm font-black",
-                          Number(txn.amount) < 0 ? "text-red-500" : (txn.gateway === "VENDOR_PAYOUT" ? "text-blue-500" : "text-emerald-600")
-                        )}>
-                          {Number(txn.amount) < 0 ? "-" : (txn.gateway === "VENDOR_PAYOUT" ? "out " : "in ")}
-                          ₹{Math.abs(Number(txn.amount)).toLocaleString()}
-                        </span>
-                      </TableCell>
-                      <TableCell>{getStatusBadge(txn.status)}</TableCell>
-                      <TableCell className="text-[10px] font-bold text-swiggy-gray uppercase tracking-tighter">
-                        {new Date(txn.created_at).toLocaleDateString()}
-                        <span className="block opacity-50 font-medium">{new Date(txn.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                      </TableCell>
-                      <TableCell className="text-right pr-8">
-                        <Button variant="ghost" size="icon" className="rounded-xl hover:bg-white dark:hover:bg-zinc-800 text-swiggy-orange">
-                          <ExternalLink className="w-4 h-4" />
-                        </Button>
                       </TableCell>
                     </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
+                  ) : (
+                    filteredTxns.map((txn) => (
+                      <TableRow key={txn.id} className="group hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition-colors border-zinc-50 dark:border-zinc-800">
+                        <TableCell className="pl-8 py-5">
+                          <div className="flex flex-col">
+                            <span className="font-mono text-[11px] font-black text-swiggy-navy dark:text-white uppercase truncate max-w-[150px]">{txn.txn_id || "N/A"}</span>
+                            <span className="text-[9px] font-bold text-zinc-400 mt-0.5 uppercase tracking-tighter">Reference ID</span>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="secondary" className="bg-zinc-100 text-zinc-600 border-none font-bold text-[9px] px-2 py-0.5 uppercase tracking-tighter">
+                            {getGatewayIcon(txn.gateway)}
+                            {txn.gateway.replace('_', ' ')}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex flex-col">
+                            <span className="text-xs font-black text-swiggy-navy dark:text-white">{txn.orders?.customers?.full_name || "Merchant Payout"}</span>
+                            <span className="text-[10px] font-bold text-swiggy-gray uppercase tracking-tighter">{txn.order_id.slice(0, 8).toUpperCase()}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <span className={cn(
+                            "text-sm font-black",
+                            Number(txn.amount) < 0 ? "text-red-500" : (txn.gateway === "VENDOR_PAYOUT" ? "text-blue-500" : "text-emerald-600")
+                          )}>
+                            {Number(txn.amount) < 0 ? "-" : (txn.gateway === "VENDOR_PAYOUT" ? "out " : "in ")}
+                            ₹{Math.abs(Number(txn.amount)).toLocaleString()}
+                          </span>
+                        </TableCell>
+                        <TableCell>{getStatusBadge(txn.status)}</TableCell>
+                        <TableCell className="text-[10px] font-bold text-swiggy-gray uppercase tracking-tighter">
+                          {new Date(txn.created_at).toLocaleDateString()}
+                          <span className="block opacity-50 font-medium">{new Date(txn.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                        </TableCell>
+                        <TableCell className="text-right pr-8">
+                          <Button variant="ghost" size="icon" className="rounded-xl hover:bg-white dark:hover:bg-zinc-800 text-swiggy-orange">
+                            <ExternalLink className="w-4 h-4" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </div>
           </div>
         </CardContent>
       </Card>
 
       {/* Payout Modal */}
       <Dialog open={isPayoutOpen} onOpenChange={setIsPayoutOpen}>
-        <DialogContent className="rounded-[2rem] sm:max-w-md p-0 overflow-hidden border-none shadow-2xl">
-          <div className="bg-swiggy-orange p-8 text-white">
-            <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center mb-4">
-              <Landmark className="w-6 h-6" />
+        <DialogContent className="rounded-2xl sm:rounded-[2rem] sm:max-w-md p-0 overflow-hidden border-none shadow-2xl">
+          <div className="bg-swiggy-orange p-6 sm:p-8 text-white">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white/20 rounded-xl sm:rounded-2xl flex items-center justify-center mb-4">
+              <Landmark className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
-            <DialogTitle className="text-2xl font-black uppercase tracking-tight">Vendor Settlement</DialogTitle>
-            <DialogDescription className="text-white/80 font-bold uppercase text-[10px] tracking-widest mt-1">
+            <DialogTitle className="text-xl sm:text-2xl font-black uppercase tracking-tight">Vendor Settlement</DialogTitle>
+            <DialogDescription className="text-white/80 font-bold uppercase text-[9px] sm:text-[10px] tracking-widest mt-1">
               Process batch payout for unpaid orders
             </DialogDescription>
           </div>
-          <div className="p-8 space-y-6">
+          <div className="p-6 sm:p-8 space-y-6">
             <div className="space-y-3">
-              <label className="text-[10px] font-black uppercase tracking-widest text-swiggy-gray">Select Vendor</label>
+              <label className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-swiggy-gray">Select Vendor</label>
               <Select onValueChange={setSelectedVendor} value={selectedVendor}>
-                <SelectTrigger className="h-14 rounded-2xl border-zinc-200 font-bold">
-                  <SelectValue placeholder="Choose a vendor to pay..." />
+                <SelectTrigger className="h-12 sm:h-14 rounded-xl sm:rounded-2xl border-zinc-200 font-bold text-sm">
+                  <SelectValue placeholder="Choose a vendor..." />
                 </SelectTrigger>
-                <SelectContent className="rounded-2xl">
+                <SelectContent className="rounded-xl sm:rounded-2xl">
                   {vendors.map((v) => (
                     <SelectItem key={v.id} value={v.id} className="font-bold py-3">{v.business_name}</SelectItem>
                   ))}
@@ -384,15 +390,15 @@ export default function PaymentsPage() {
               </Select>
             </div>
             
-            <div className="p-4 rounded-2xl bg-blue-50 border border-blue-100 flex gap-3">
-              <Info className="w-5 h-5 text-blue-500 shrink-0 mt-0.5" />
-              <p className="text-xs font-bold text-blue-900 leading-relaxed">
-                Clicking "Process Payout" will calculate all unpaid earnings for this vendor and simulate a bank transfer.
+            <div className="p-4 rounded-xl sm:rounded-2xl bg-blue-50 border border-blue-100 flex gap-3">
+              <Info className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500 shrink-0 mt-0.5" />
+              <p className="text-[11px] sm:text-xs font-bold text-blue-900 leading-relaxed">
+                Processes all unpaid earnings for this vendor and simulates a bank transfer.
               </p>
             </div>
 
             <Button 
-              className="w-full h-14 bg-swiggy-orange hover:bg-swiggy-orange/90 text-white rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-swiggy-orange/20"
+              className="w-full h-12 sm:h-14 bg-swiggy-orange hover:bg-swiggy-orange/90 text-white rounded-xl sm:rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-swiggy-orange/20 text-xs sm:text-sm"
               onClick={handlePayout}
               disabled={isProcessingPayout}
             >
@@ -404,33 +410,33 @@ export default function PaymentsPage() {
 
       {/* Refund Modal */}
       <Dialog open={isRefundOpen} onOpenChange={setIsRefundOpen}>
-        <DialogContent className="rounded-[2rem] sm:max-w-md p-0 overflow-hidden border-none shadow-2xl">
-          <div className="bg-swiggy-navy p-8 text-white">
-            <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center mb-4">
-              <RefreshCcw className="w-6 h-6" />
+        <DialogContent className="rounded-2xl sm:rounded-[2rem] sm:max-w-md p-0 overflow-hidden border-none shadow-2xl">
+          <div className="bg-swiggy-navy p-6 sm:p-8 text-white">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white/20 rounded-xl sm:rounded-2xl flex items-center justify-center mb-4">
+              <RefreshCcw className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
-            <DialogTitle className="text-2xl font-black uppercase tracking-tight">Initiate Refund</DialogTitle>
-            <DialogDescription className="text-white/60 font-bold uppercase text-[10px] tracking-widest mt-1">
+            <DialogTitle className="text-xl sm:text-2xl font-black uppercase tracking-tight">Initiate Refund</DialogTitle>
+            <DialogDescription className="text-white/60 font-bold uppercase text-[9px] sm:text-[10px] tracking-widest mt-1">
               Reverse customer payment
             </DialogDescription>
           </div>
-          <div className="p-8 space-y-6">
+          <div className="p-6 sm:p-8 space-y-6">
             <div className="space-y-4">
               <div className="space-y-3">
-                <label className="text-[10px] font-black uppercase tracking-widest text-swiggy-gray">Order ID</label>
+                <label className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-swiggy-gray">Order ID</label>
                 <Input 
-                  placeholder="Enter Order ID..." 
-                  className="h-14 rounded-2xl border-zinc-200 font-bold"
+                  placeholder="Order ID..." 
+                  className="h-12 sm:h-14 rounded-xl sm:rounded-2xl border-zinc-200 font-bold text-sm"
                   value={selectedOrder}
                   onChange={(e) => setSelectedOrder(e.target.value)}
                 />
               </div>
               <div className="space-y-3">
-                <label className="text-[10px] font-black uppercase tracking-widest text-swiggy-gray">Refund Amount (₹)</label>
+                <label className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-swiggy-gray">Refund Amount (₹)</label>
                 <Input 
                   type="number"
                   placeholder="0.00" 
-                  className="h-14 rounded-2xl border-zinc-200 font-bold"
+                  className="h-12 sm:h-14 rounded-xl sm:rounded-2xl border-zinc-200 font-bold text-sm"
                   value={refundAmount}
                   onChange={(e) => setRefundAmount(e.target.value)}
                 />
@@ -438,7 +444,7 @@ export default function PaymentsPage() {
             </div>
 
             <Button 
-              className="w-full h-14 bg-swiggy-navy hover:bg-swiggy-navy/90 text-white rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-zinc-200"
+              className="w-full h-12 sm:h-14 bg-swiggy-navy hover:bg-swiggy-navy/90 text-white rounded-xl sm:rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-zinc-200 text-xs sm:text-sm"
               onClick={handleRefund}
               disabled={isProcessingRefund}
             >
@@ -450,4 +456,3 @@ export default function PaymentsPage() {
     </div>
   );
 }
-

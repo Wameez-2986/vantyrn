@@ -56,19 +56,19 @@ export default function Sidebar({ isOpen, onClose }) {
       isOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full"
     )}>
       {/* Logo Section */}
-      <div className="p-6">
+      <div className="p-4 sm:p-6 flex items-center justify-between">
         <Link href="/dashboard" className="flex items-center gap-2 group">
-          <div className="w-10 h-10 bg-swiggy-orange rounded-xl flex items-center justify-center shadow-lg shadow-swiggy-orange/30 group-hover:scale-105 transition-transform duration-200">
-            <span className="text-white font-bold text-2xl italic">V</span>
+          <div className="w-8 h-8 sm:w-10 sm:h-10 bg-swiggy-orange rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg shadow-swiggy-orange/30 group-hover:scale-105 transition-transform duration-200">
+            <span className="text-white font-bold text-xl sm:text-2xl italic">V</span>
           </div>
-          <span className="text-2xl font-bold tracking-tight text-swiggy-navy dark:text-white">
+          <span className="text-xl sm:text-2xl font-bold tracking-tight text-swiggy-navy dark:text-white">
             Vantyrn<span className="text-swiggy-orange">.</span>
           </span>
         </Link>
         <Button 
           variant="ghost" 
           size="icon" 
-          className="lg:hidden absolute right-4 top-6 text-swiggy-gray hover:text-swiggy-orange transition-colors"
+          className="lg:hidden text-swiggy-gray hover:text-swiggy-orange transition-colors"
           onClick={onClose}
         >
           <X className="w-6 h-6" />

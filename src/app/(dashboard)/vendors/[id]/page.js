@@ -322,57 +322,59 @@ export default function VendorDetailPage() {
   return (
     <div className="space-y-6 animate-in fade-in duration-500 pb-12">
       {/* Navigation & Header */}
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" className="rounded-xl border border-zinc-200" onClick={() => router.back()}>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+        <Button variant="ghost" size="icon" className="rounded-xl border border-zinc-200 shrink-0" onClick={() => router.back()}>
           <ArrowLeft className="w-5 h-5" />
         </Button>
-        <div>
-          <div className="flex items-center gap-3">
-            <h1 className="text-3xl font-black text-swiggy-navy dark:text-white tracking-tight">{vendor.businessName}</h1>
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+            <h1 className="text-2xl sm:text-3xl font-black text-swiggy-navy dark:text-white tracking-tight truncate">{vendor.businessName}</h1>
             {(() => {
               const config = STATUS_CONFIG[vendor.status] || STATUS_CONFIG.DISABLED;
               return (
-                <Badge className={`${config.color} font-bold text-[10px] uppercase tracking-wider`}>
+                <Badge className={`${config.color} font-bold text-[9px] sm:text-[10px] uppercase tracking-wider whitespace-nowrap`}>
                   {config.label}
                 </Badge>
               );
             })()}
           </div>
-          <p className="text-sm text-swiggy-gray font-medium mt-1">Vendor ID: {vendor.id} • Registered on March 20, 2026</p>
+          <p className="text-xs sm:text-sm text-swiggy-gray font-medium mt-1 truncate">Vendor ID: {vendor.id} • Registered on March 20, 2026</p>
         </div>
       </div>
 
       <Tabs defaultValue="overview" className="space-y-6" onValueChange={setActiveTab}>
-        <div className="flex items-center justify-between">
-          <TabsList className="bg-white dark:bg-zinc-900 border border-zinc-100 p-1 rounded-xl h-14">
-            <TabsTrigger value="overview" className="rounded-lg px-6 font-bold h-full data-[state=active]:bg-swiggy-orange data-[state=active]:text-white transition-all">
-              Overview
-            </TabsTrigger>
-            <TabsTrigger value="bank" className="rounded-lg px-6 font-bold h-full data-[state=active]:bg-swiggy-orange data-[state=active]:text-white transition-all">
-              Bank Details
-            </TabsTrigger>
-            <TabsTrigger value="kyc" className="rounded-lg px-6 font-bold h-full data-[state=active]:bg-swiggy-orange data-[state=active]:text-white transition-all">
-              KYC Documents
-            </TabsTrigger>
-            <TabsTrigger value="actions" className="rounded-lg px-6 font-bold h-full data-[state=active]:bg-swiggy-orange data-[state=active]:text-white transition-all">
-              Actions & Logs
-            </TabsTrigger>
-            <TabsTrigger value="earnings" className="rounded-lg px-6 font-bold h-full data-[state=active]:bg-swiggy-orange data-[state=active]:text-white transition-all">
-              Earnings
-            </TabsTrigger>
-          </TabsList>
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="w-full overflow-x-auto scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
+            <TabsList className="inline-flex min-w-max bg-white dark:bg-zinc-900 border border-zinc-100 p-1 rounded-xl h-12 sm:h-14">
+              <TabsTrigger value="overview" className="rounded-lg px-4 sm:px-6 font-bold h-full data-[state=active]:bg-swiggy-orange data-[state=active]:text-white transition-all text-xs sm:text-sm">
+                Overview
+              </TabsTrigger>
+              <TabsTrigger value="bank" className="rounded-lg px-4 sm:px-6 font-bold h-full data-[state=active]:bg-swiggy-orange data-[state=active]:text-white transition-all text-xs sm:text-sm">
+                Bank Details
+              </TabsTrigger>
+              <TabsTrigger value="kyc" className="rounded-lg px-4 sm:px-6 font-bold h-full data-[state=active]:bg-swiggy-orange data-[state=active]:text-white transition-all text-xs sm:text-sm">
+                KYC Documents
+              </TabsTrigger>
+              <TabsTrigger value="actions" className="rounded-lg px-4 sm:px-6 font-bold h-full data-[state=active]:bg-swiggy-orange data-[state=active]:text-white transition-all text-xs sm:text-sm">
+                Actions & Logs
+              </TabsTrigger>
+              <TabsTrigger value="earnings" className="rounded-lg px-4 sm:px-6 font-bold h-full data-[state=active]:bg-swiggy-orange data-[state=active]:text-white transition-all text-xs sm:text-sm">
+                Earnings
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
           {activeTab === "kyc" && (vendor.kycStatus === "KYC_SUBMITTED" || vendor.kycStatus === "UNDER_REVIEW") && (
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
               <Button 
                 variant="outline" 
-                className="text-red-500 border-red-100 hover:bg-red-50 font-bold"
+                className="flex-1 sm:flex-none text-red-500 border-red-100 hover:bg-red-50 font-bold h-10 sm:h-11 text-xs sm:text-sm"
                 onClick={() => setIsRejectDialogOpen(true)}
               >
                 Reject KYC
               </Button>
               <Button 
-                className="bg-green-500 hover:bg-green-600 text-white font-bold"
+                className="flex-1 sm:flex-none bg-green-500 hover:bg-green-600 text-white font-bold h-10 sm:h-11 text-xs sm:text-sm"
                 onClick={handleApproveKYC}
               >
                 Approve KYC
@@ -393,18 +395,18 @@ export default function VendorDetailPage() {
                    <span className="text-[10px] font-black uppercase tracking-widest">{vendor.isOnline ? 'Online' : 'Offline'}</span>
                 </div>
               </div>
-              <CardContent className="p-8 relative -mt-12">
-                <div className="flex items-end gap-6 mb-8">
-                  <div className="w-24 h-24 rounded-2xl bg-white p-1 shadow-lg shadow-zinc-200/50 border border-zinc-50 z-10">
+              <CardContent className="p-4 sm:p-8 relative -mt-8 sm:-mt-12">
+                <div className="flex flex-col sm:flex-row items-center sm:items-end gap-4 sm:gap-6 mb-8 text-center sm:text-left">
+                  <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-white p-1 shadow-lg shadow-zinc-200/50 border border-zinc-50 z-10">
                     <img src={vendor.logoUrl} alt="Logo" className="w-full h-full rounded-xl object-cover" />
                   </div>
-                  <div className="flex-1 pb-2">
-                    <h3 className="text-xl font-black text-swiggy-navy uppercase tracking-tight">{vendor.businessName}</h3>
-                    <p className="text-sm font-medium text-swiggy-gray">{vendor.category} • Specialist</p>
+                  <div className="flex-1 pb-1 sm:pb-2">
+                    <h3 className="text-lg sm:text-xl font-black text-swiggy-navy uppercase tracking-tight">{vendor.businessName}</h3>
+                    <p className="text-xs sm:text-sm font-medium text-swiggy-gray">{vendor.category} • Specialist</p>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-8 border-t border-zinc-50">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 pt-6 sm:pt-8 border-t border-zinc-50">
                   <div className="space-y-6">
                     <div className="flex gap-3">
                       <div className="w-10 h-10 rounded-xl bg-zinc-50 flex items-center justify-center border border-zinc-100">

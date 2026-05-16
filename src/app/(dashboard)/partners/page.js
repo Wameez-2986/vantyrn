@@ -178,20 +178,20 @@ export default function PartnersPage() {
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       {/* Header Area */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-black text-swiggy-navy dark:text-white tracking-tight">Delivery Partners</h1>
-          <p className="text-sm text-swiggy-gray font-medium mt-1">Manage partner accounts, vehicle documentation, and zone allocation</p>
+          <h1 className="text-2xl sm:text-3xl font-black text-swiggy-navy dark:text-white tracking-tight">Delivery Partners</h1>
+          <p className="text-xs sm:text-sm text-swiggy-gray font-medium mt-1">Manage partner accounts, vehicle documentation, and zone allocation</p>
         </div>
         
         <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-swiggy-orange hover:bg-swiggy-orange/90 text-white font-black px-6 rounded-xl h-12 gap-2 shadow-lg shadow-swiggy-orange/20">
-              <Plus className="w-5 h-5" />
+            <Button className="w-full sm:w-auto bg-swiggy-orange hover:bg-swiggy-orange/90 text-white font-black px-6 rounded-xl h-10 sm:h-12 gap-2 shadow-lg shadow-swiggy-orange/20 text-xs sm:text-sm">
+              <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
               Add Partner
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[700px]">
+          <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
             <form onSubmit={handleAddRider}>
               <DialogHeader>
                 <DialogTitle className="text-2xl font-black text-swiggy-navy">Onboard New Partner</DialogTitle>
@@ -199,23 +199,23 @@ export default function PartnersPage() {
                   Standard registration for new delivery partners. Account starts as KYC_SUBMITTED.
                 </DialogDescription>
               </DialogHeader>
-              <div className="grid grid-cols-2 gap-6 py-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 py-6 sm:py-8 border-y border-zinc-100 my-4">
                 <div className="space-y-2">
                   <Label htmlFor="fullName" className="font-bold">Full Name</Label>
-                  <Input id="fullName" placeholder="e.g. Aryan Khan" required />
+                  <Input id="fullName" placeholder="e.g. Aryan Khan" required className="h-10 sm:h-11" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="phone" className="font-bold">Phone Number</Label>
-                  <Input id="phone" placeholder="+91 XXXXX XXXXX" required />
+                  <Input id="phone" placeholder="+91 XXXXX XXXXX" required className="h-10 sm:h-11" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="email" className="font-bold">Email Address</Label>
-                  <Input id="email" type="email" placeholder="rider@example.com" required />
+                  <Input id="email" type="email" placeholder="rider@example.com" required className="h-10 sm:h-11" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="vehicleType" className="font-bold">Vehicle Type</Label>
                   <Select required>
-                    <SelectTrigger>
+                    <SelectTrigger className="h-10 sm:h-11">
                       <SelectValue placeholder="Select vehicle" />
                     </SelectTrigger>
                     <SelectContent>
@@ -228,12 +228,12 @@ export default function PartnersPage() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="vehicleNumber" className="font-bold">Vehicle Number</Label>
-                  <Input id="vehicleNumber" placeholder="e.g. MH-12-AB-1234" required />
+                  <Input id="vehicleNumber" placeholder="e.g. MH-12-AB-1234" required className="h-10 sm:h-11" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="zone" className="font-bold">Preferred Zone</Label>
                   <Select required>
-                    <SelectTrigger>
+                    <SelectTrigger className="h-10 sm:h-11">
                       <SelectValue placeholder="Select Zone" />
                     </SelectTrigger>
                     <SelectContent>
@@ -245,9 +245,9 @@ export default function PartnersPage() {
                   </Select>
                 </div>
               </div>
-              <DialogFooter>
-                <Button type="button" variant="ghost" className="font-bold" onClick={() => setIsAddModalOpen(false)}>Cancel</Button>
-                <Button type="submit" className="bg-swiggy-orange hover:bg-swiggy-orange/90 font-black px-8">Create Partner</Button>
+              <DialogFooter className="gap-2">
+                <Button type="button" variant="ghost" className="font-bold flex-1 sm:flex-none" onClick={() => setIsAddModalOpen(false)}>Cancel</Button>
+                <Button type="submit" className="bg-swiggy-orange hover:bg-swiggy-orange/90 font-black px-8 flex-1 sm:flex-none">Create Partner</Button>
               </DialogFooter>
             </form>
           </DialogContent>
@@ -255,90 +255,96 @@ export default function PartnersPage() {
       </div>
 
       {/* Filters & Table Area */}
-      <div className="bg-white dark:bg-zinc-950 rounded-3xl border border-zinc-100 dark:border-zinc-800 p-8 shadow-sm space-y-6">
-        <div className="flex flex-col md:flex-row gap-4">
+      <div className="bg-white dark:bg-zinc-950 rounded-2xl sm:rounded-3xl border border-zinc-100 dark:border-zinc-800 p-4 sm:p-8 shadow-sm space-y-6">
+        <div className="flex flex-col lg:flex-row gap-4">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-swiggy-gray" />
             <Input 
-              placeholder="Search by name or phone..." 
+              placeholder="Search riders..." 
               value={globalFilter ?? ""}
               onChange={(e) => setGlobalFilter(e.target.value)}
-              className="pl-10 h-11 border-zinc-200 rounded-xl"
+              className="pl-10 h-10 sm:h-11 border-zinc-200 rounded-lg sm:rounded-xl text-sm"
             />
           </div>
-          <Select value={vehicleFilter} onValueChange={setVehicleFilter}>
-            <SelectTrigger className="w-full md:w-48 h-11 rounded-xl">
-              <Bike className="w-4 h-4 mr-2" />
-              <SelectValue placeholder="Vehicle Type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="ALL">All Vehicles</SelectItem>
-              <SelectItem value="Bike">Bike</SelectItem>
-              <SelectItem value="Scooter">Scooter</SelectItem>
-              <SelectItem value="Electric">Electric</SelectItem>
-            </SelectContent>
-          </Select>
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-full md:w-48 h-11 rounded-xl">
-              <Filter className="w-4 h-4 mr-2" />
-              <SelectValue placeholder="Status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="ALL">All Statuses</SelectItem>
-              {Object.entries(STATUS_CONFIG).map(([key, value]) => (
-                <SelectItem key={key} value={key}>{value.label}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
+            <Select value={vehicleFilter} onValueChange={setVehicleFilter}>
+              <SelectTrigger className="w-full sm:w-48 h-10 sm:h-11 rounded-lg sm:rounded-xl text-xs sm:text-sm">
+                <Bike className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-2" />
+                <SelectValue placeholder="Vehicle Type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="ALL">All Vehicles</SelectItem>
+                <SelectItem value="Bike">Bike</SelectItem>
+                <SelectItem value="Scooter">Scooter</SelectItem>
+                <SelectItem value="Electric">Electric</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-full sm:w-48 h-10 sm:h-11 rounded-lg sm:rounded-xl text-xs sm:text-sm">
+                <Filter className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-2" />
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="ALL">All Statuses</SelectItem>
+                {Object.entries(STATUS_CONFIG).map(([key, value]) => (
+                  <SelectItem key={key} value={key}>{value.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
-        <div className="rounded-2xl border border-zinc-100 overflow-hidden">
-          <Table>
-            <TableHeader className="bg-zinc-50 dark:bg-zinc-900">
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => (
-                    <TableHead key={header.id} className="text-zinc-500 font-bold uppercase text-[10px] tracking-widest py-4">
-                      {flexRender(header.column.columnDef.header, header.getContext())}
-                    </TableHead>
+        <div className="rounded-xl sm:rounded-2xl border border-zinc-100 overflow-hidden shadow-sm">
+          <div className="responsive-table-container">
+            <div className="min-w-[1000px]">
+              <Table>
+                <TableHeader className="bg-zinc-50 dark:bg-zinc-900">
+                  {table.getHeaderGroups().map((headerGroup) => (
+                    <TableRow key={headerGroup.id}>
+                      {headerGroup.headers.map((header) => (
+                        <TableHead key={header.id} className="text-zinc-500 font-bold uppercase text-[10px] tracking-widest py-4 sm:py-5">
+                          {flexRender(header.column.columnDef.header, header.getContext())}
+                        </TableHead>
+                      ))}
+                    </TableRow>
                   ))}
-                </TableRow>
-              ))}
-            </TableHeader>
-            <TableBody>
-              {table.getRowModel().rows.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow key={row.id} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-900/50">
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id} className="py-4">
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </TableHeader>
+                <TableBody>
+                  {table.getRowModel().rows.length ? (
+                    table.getRowModel().rows.map((row) => (
+                      <TableRow key={row.id} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-900/50">
+                        {row.getVisibleCells().map((cell) => (
+                          <TableCell key={cell.id} className="py-4">
+                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={columns.length} className="h-24 text-center text-zinc-500 font-medium italic">
+                        No delivery partners found.
                       </TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={columns.length} className="h-24 text-center text-zinc-500 font-medium italic">
-                    No delivery partners found.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
         </div>
 
         {/* Pagination */}
-        <div className="flex items-center justify-between pt-4">
-          <p className="text-sm font-bold text-swiggy-gray">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4">
+          <p className="text-xs sm:text-sm font-bold text-swiggy-gray">
             Showing <span className="text-swiggy-navy">{table.getState().pagination.pageIndex + 1}</span> of <span className="text-swiggy-navy">{table.getPageCount()}</span> pages
           </p>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 w-full sm:w-auto">
             <Button 
               variant="outline" 
               size="sm" 
               onClick={() => table.previousPage()} 
               disabled={!table.getCanPreviousPage()}
-              className="font-bold h-10 px-4 rounded-xl border-zinc-200"
+              className="font-bold h-10 sm:h-11 px-4 sm:px-6 rounded-lg sm:rounded-xl border-zinc-200 flex-1 sm:flex-none text-xs sm:text-sm"
             >
               Previous
             </Button>
@@ -347,7 +353,7 @@ export default function PartnersPage() {
               size="sm" 
               onClick={() => table.nextPage()} 
               disabled={!table.getCanNextPage()}
-              className="font-bold h-10 px-4 rounded-xl border-zinc-200"
+              className="font-bold h-10 sm:h-11 px-4 sm:px-6 rounded-lg sm:rounded-xl border-zinc-200 flex-1 sm:flex-none text-xs sm:text-sm"
             >
               Next
             </Button>

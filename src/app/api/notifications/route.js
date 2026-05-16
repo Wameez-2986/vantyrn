@@ -89,6 +89,44 @@ export async function GET() {
         });
       }
 
+      // 5. Sync Support Requests (Complaints)
+      const pendingSupport = await prisma.support_requests.findMany({
+        where: { status: 'PENDING' },
+        include: { customers: { select: { full_name: true } } },
+        take: 10
+      });
+
+      for (const support of pendingSupport) {
+        newNotifications.push({
+          reference_id: `support_req_${support.id}`,
+          title: "New Customer Complaint",
+          description: `${support.customers?.full_name || 'A customer'} raised a ${support.issue_type || 'complaint'}: ${support.message?.slice(0, 50)}...`,
+          type: 'CUSTOMER',
+          created_at: support.created_at || new Date()
+        });
+      }
+
+      // 6. Sync Negative Feedback
+      const negativeFeedback = await prisma.feedback.findMany({
+        where: { rating: { lte: 2 } },
+        include: { 
+          customers: { select: { full_name: true } },
+          orders: { include: { vendors: { select: { business_name: true } } } }
+        },
+        orderBy: { submitted_at: 'desc' },
+        take: 5
+      });
+
+      for (const feedback of negativeFeedback) {
+        newNotifications.push({
+          reference_id: `neg_feedback_${feedback.id}`,
+          title: "Poor Feedback Received",
+          description: `${feedback.customers?.full_name || 'Customer'} gave ${feedback.rating} stars to ${feedback.orders?.vendors?.business_name || 'Vendor'}: ${feedback.comment?.slice(0, 50)}`,
+          type: 'CUSTOMER',
+          created_at: feedback.submitted_at || new Date()
+        });
+      }
+
       // Bulk create if there are any pending items
       if (newNotifications.length > 0) {
         await prisma.admin_notifications.createMany({

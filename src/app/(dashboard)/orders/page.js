@@ -253,16 +253,16 @@ export default function OrdersPage() {
     <div className="space-y-6 animate-in fade-in duration-500">
       <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-black text-swiggy-navy dark:text-white tracking-tight">Orders Lifecycle</h1>
-          <p className="text-sm text-swiggy-gray font-medium mt-1">Real-time order tracking and exception management</p>
+          <h1 className="text-2xl sm:text-3xl font-black text-swiggy-navy dark:text-white tracking-tight">Orders Lifecycle</h1>
+          <p className="text-xs sm:text-sm text-swiggy-gray font-medium mt-1">Real-time order tracking and exception management</p>
         </div>
         <Tabs defaultValue="ALL" className="w-full lg:w-fit" onValueChange={setQuickFilter}>
-          <TabsList className="bg-white dark:bg-zinc-900 border border-zinc-100 p-1 rounded-2xl h-14 shadow-sm w-full lg:w-fit flex overflow-x-auto overflow-y-hidden justify-start lg:justify-center scrollbar-hide">
+          <TabsList className="bg-white dark:bg-zinc-900 border border-zinc-100 p-1 rounded-xl sm:rounded-2xl h-12 sm:h-14 shadow-sm w-full lg:w-fit flex overflow-x-auto overflow-y-hidden justify-start lg:justify-center scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
             {["ALL", "ACTIVE", "FLAGGED", "COMPLETED", "CANCELLED"].map(tab => (
               <TabsTrigger 
                 key={tab} 
                 value={tab} 
-                className="rounded-xl px-6 lg:px-6 font-black text-[10px] uppercase tracking-widest h-full data-[state=active]:bg-swiggy-orange data-[state=active]:text-white transition-all shrink-0"
+                className="rounded-lg sm:rounded-xl px-4 sm:px-6 font-black text-[9px] sm:text-[10px] uppercase tracking-widest h-full data-[state=active]:bg-swiggy-orange data-[state=active]:text-white transition-all shrink-0"
               >
                 {tab}
               </TabsTrigger>
@@ -271,7 +271,7 @@ export default function OrdersPage() {
         </Tabs>
       </div>
 
-      <div className="bg-white dark:bg-zinc-950 rounded-3xl border border-zinc-100 dark:border-zinc-800 p-4 md:p-8 shadow-sm space-y-6">
+      <div className="bg-white dark:bg-zinc-950 rounded-2xl sm:rounded-3xl border border-zinc-100 dark:border-zinc-800 p-4 sm:p-8 shadow-sm space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
            <div className="relative md:col-span-2">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-swiggy-gray" />
@@ -314,8 +314,9 @@ export default function OrdersPage() {
            </Select>
         </div>
 
-        <div className="rounded-2xl border border-zinc-100 overflow-x-auto shadow-sm scrollbar-hide">
-          <Table>
+        <div className="responsive-table-container">
+          <div className="rounded-xl border border-zinc-100 overflow-hidden min-w-[1000px]">
+            <Table>
             <TableHeader className="bg-zinc-50 border-b border-zinc-100">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
@@ -367,6 +368,7 @@ export default function OrdersPage() {
             </TableBody>
           </Table>
         </div>
+      </div>
 
         {/* Pagination */}
         <div className="flex items-center justify-between pt-4">

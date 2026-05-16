@@ -155,17 +155,17 @@ export default function CustomersPage() {
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-black text-swiggy-navy dark:text-white tracking-tight">Customer Directory</h1>
-          <p className="text-sm text-swiggy-gray font-medium mt-1">Manage foodies, guest users, and loyalty data</p>
+          <h1 className="text-2xl sm:text-3xl font-black text-swiggy-navy dark:text-white tracking-tight">Customer Directory</h1>
+          <p className="text-xs sm:text-sm text-swiggy-gray font-medium mt-1">Manage foodies, guest users, and loyalty data</p>
         </div>
         <div className="flex items-center gap-3">
-           <div className="p-1 bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-2xl flex gap-1 shadow-sm">
+           <div className="p-1 bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-xl sm:rounded-2xl flex gap-1 shadow-sm overflow-x-auto scrollbar-hide">
               <Button 
                 variant={typeFilter === 'ALL' ? 'secondary' : 'ghost'} 
                 size="sm" 
-                className={`rounded-xl px-4 font-bold ${typeFilter === 'ALL' ? 'bg-swiggy-orange text-white hover:bg-swiggy-orange/90' : ''}`}
+                className={`rounded-lg sm:rounded-xl px-4 font-bold text-xs sm:text-sm ${typeFilter === 'ALL' ? 'bg-swiggy-orange text-white hover:bg-swiggy-orange/90' : ''}`}
                 onClick={() => setTypeFilter('ALL')}
               >
                 All
@@ -173,7 +173,7 @@ export default function CustomersPage() {
               <Button 
                 variant={typeFilter === 'REGISTERED' ? 'secondary' : 'ghost'} 
                 size="sm" 
-                className={`rounded-xl px-4 font-bold ${typeFilter === 'REGISTERED' ? 'bg-swiggy-orange text-white hover:bg-swiggy-orange/90' : ''}`}
+                className={`rounded-lg sm:rounded-xl px-4 font-bold text-xs sm:text-sm ${typeFilter === 'REGISTERED' ? 'bg-swiggy-orange text-white hover:bg-swiggy-orange/90' : ''}`}
                 onClick={() => setTypeFilter('REGISTERED')}
               >
                 Registered
@@ -181,7 +181,7 @@ export default function CustomersPage() {
               <Button 
                 variant={typeFilter === 'GUEST' ? 'secondary' : 'ghost'} 
                 size="sm" 
-                className={`rounded-xl px-4 font-bold ${typeFilter === 'GUEST' ? 'bg-swiggy-orange text-white hover:bg-swiggy-orange/90' : ''}`}
+                className={`rounded-lg sm:rounded-xl px-4 font-bold text-xs sm:text-sm ${typeFilter === 'GUEST' ? 'bg-swiggy-orange text-white hover:bg-swiggy-orange/90' : ''}`}
                 onClick={() => setTypeFilter('GUEST')}
               >
                 Guest
@@ -190,79 +190,83 @@ export default function CustomersPage() {
         </div>
       </div>
 
-      <div className="bg-white dark:bg-zinc-950 rounded-3xl border border-zinc-100 dark:border-zinc-800 p-8 shadow-sm space-y-6">
+      <div className="bg-white dark:bg-zinc-950 rounded-2xl sm:rounded-3xl border border-zinc-100 dark:border-zinc-800 p-4 sm:p-8 shadow-sm space-y-6">
         <div className="flex flex-col md:flex-row gap-4">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-swiggy-gray" />
             <Input 
-              placeholder="Search by name, phone or email..." 
+              placeholder="Search customers..." 
               value={globalFilter ?? ""}
               onChange={(e) => setGlobalFilter(e.target.value)}
-              className="pl-10 h-12 border-zinc-200 rounded-xl"
+              className="pl-10 h-10 sm:h-12 border-zinc-200 rounded-lg sm:rounded-xl text-sm"
             />
           </div>
         </div>
 
-        <div className="rounded-2xl border border-zinc-100 overflow-hidden shadow-sm">
-          <Table>
-            <TableHeader className="bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-100">
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => (
-                    <TableHead key={header.id} className="text-zinc-500 font-black uppercase text-[10px] tracking-widest py-5">
-                      {flexRender(header.column.columnDef.header, header.getContext())}
-                    </TableHead>
+        <div className="rounded-xl sm:rounded-2xl border border-zinc-100 overflow-hidden shadow-sm">
+          <div className="responsive-table-container">
+            <div className="min-w-[1000px]">
+              <Table>
+                <TableHeader className="bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-100">
+                  {table.getHeaderGroups().map((headerGroup) => (
+                    <TableRow key={headerGroup.id}>
+                      {headerGroup.headers.map((header) => (
+                        <TableHead key={header.id} className="text-zinc-500 font-black uppercase text-[10px] tracking-widest py-4 sm:py-5">
+                          {flexRender(header.column.columnDef.header, header.getContext())}
+                        </TableHead>
+                      ))}
+                    </TableRow>
                   ))}
-                </TableRow>
-              ))}
-            </TableHeader>
-            <TableBody>
-              {loading ? (
-                [1, 2, 3, 4, 5].map((i) => (
-                  <TableRow key={i}>
-                    {columns.map((_, j) => (
-                      <TableCell key={j} className="py-4 border-b border-zinc-50">
-                        <Skeleton className="h-6 w-full rounded" />
+                </TableHeader>
+                <TableBody>
+                  {loading ? (
+                    [1, 2, 3, 4, 5].map((i) => (
+                      <TableRow key={i}>
+                        {columns.map((_, j) => (
+                          <TableCell key={j} className="py-4 border-b border-zinc-50">
+                            <Skeleton className="h-6 w-full rounded" />
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    ))
+                  ) : table.getRowModel().rows.length ? (
+                    table.getRowModel().rows.map((row) => (
+                      <TableRow key={row.id} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-900/50 transition-colors">
+                        {row.getVisibleCells().map((cell) => (
+                          <TableCell key={cell.id} className="py-4 border-b border-zinc-50 last:border-0">
+                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={columns.length} className="h-32 text-center text-zinc-500 font-medium italic">
+                        <div className="flex flex-col items-center gap-2">
+                           <UserMinus className="w-8 h-8 opacity-20" />
+                           No customers found matching your criteria.
+                        </div>
                       </TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              ) : table.getRowModel().rows.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow key={row.id} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-900/50 transition-colors">
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id} className="py-4 border-b border-zinc-50 last:border-0">
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={columns.length} className="h-32 text-center text-zinc-500 font-medium italic">
-                    <div className="flex flex-col items-center gap-2">
-                       <UserMinus className="w-8 h-8 opacity-20" />
-                       No customers found matching your criteria.
-                    </div>
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
         </div>
 
         {/* Pagination */}
-        <div className="flex items-center justify-between pt-4">
-          <p className="text-sm font-bold text-swiggy-gray">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4">
+          <p className="text-xs sm:text-sm font-bold text-swiggy-gray">
             Showing <span className="text-swiggy-navy">{table.getState().pagination.pageIndex + 1}</span> of <span className="text-swiggy-navy">{table.getPageCount()}</span> pages
           </p>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 w-full sm:w-auto">
             <Button 
               variant="outline" 
               size="sm" 
               onClick={() => table.previousPage()} 
               disabled={!table.getCanPreviousPage()}
-              className="font-bold h-11 px-6 rounded-xl border-zinc-200"
+              className="font-bold h-10 sm:h-11 px-4 sm:px-6 rounded-lg sm:rounded-xl border-zinc-200 flex-1 sm:flex-none text-xs sm:text-sm"
             >
               Previous
             </Button>
@@ -271,7 +275,7 @@ export default function CustomersPage() {
               size="sm" 
               onClick={() => table.nextPage()} 
               disabled={!table.getCanNextPage()}
-              className="font-bold h-11 px-6 rounded-xl border-zinc-200"
+              className="font-bold h-10 sm:h-11 px-4 sm:px-6 rounded-lg sm:rounded-xl border-zinc-200 flex-1 sm:flex-none text-xs sm:text-sm"
             >
               Next
             </Button>

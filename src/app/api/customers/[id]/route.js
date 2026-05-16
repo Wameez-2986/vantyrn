@@ -10,11 +10,34 @@ export async function GET(request, { params }) {
       include: {
         orders: {
           include: {
-            vendors: true
+            vendors: true,
+            feedback: true
           },
           orderBy: { created_at: 'desc' },
           take: 10
-        }
+        },
+        addresses: true,
+        feedback: {
+          include: {
+            orders: {
+              include: {
+                vendors: true
+              }
+            }
+          },
+          orderBy: { submitted_at: 'desc' }
+        },
+        support_requests: {
+          include: {
+            orders: {
+              include: {
+                vendors: true
+              }
+            }
+          },
+          orderBy: { created_at: 'desc' }
+        },
+        age_verifications: true
       }
     });
 
@@ -28,16 +51,18 @@ export async function GET(request, { params }) {
       fullName: customer.full_name,
       phone: customer.phone,
       email: customer.email || "N/A",
-      profilePhoto: "https://via.placeholder.com/150",
+      profilePhoto: customer.profile_pic_url || "https://via.placeholder.com/150",
       registrationDate: customer.created_at.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
-      isGuest: false,
-      addresses: [
-        { type: "Home", detail: "402, Sunshine Apts, HSR Layout Sector 2, Bangalore - 560102" }
-      ],
+      isGuest: customer.is_guest,
+      addresses: customer.addresses.map(addr => ({
+        type: addr.address_type || "Home",
+        detail: `${addr.address_line1}${addr.address_line2 ? ', ' + addr.address_line2 : ''}, ${addr.city}, ${addr.state} - ${addr.postal_code}`
+      })),
       ageVerification: {
-        status: "VERIFIED",
-        expiryDate: "2028-12-31",
-        documentType: "Aadhar Card"
+        status: customer.age_verifications?.is_verified ? "VERIFIED" : "PENDING",
+        birthDate: customer.age_verifications?.birth_date?.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) || "N/A",
+        age: customer.age_verifications?.birth_date ? 
+             Math.floor((new Date() - new Date(customer.age_verifications.birth_date)) / (1000 * 60 * 60 * 24 * 365.25)) : "N/A"
       },
       orders: customer.orders.map(order => ({
         id: order.id.slice(0, 8).toUpperCase(),
@@ -46,7 +71,22 @@ export async function GET(request, { params }) {
         status: order.status.toUpperCase(),
         date: order.created_at.toISOString().split('T')[0]
       })),
-      feedback: []
+      feedback: customer.feedback.map(f => ({
+        id: f.id,
+        vendor: f.orders?.vendors?.business_name || "Unknown Vendor",
+        rating: f.rating,
+        comment: f.comment,
+        date: f.submitted_at.toISOString().split('T')[0]
+      })),
+      support: customer.support_requests.map(s => ({
+        id: s.id,
+        ticketId: s.whatsapp_ticket_id || s.id.slice(0, 8).toUpperCase(),
+        type: s.issue_type || "General",
+        message: s.message,
+        status: s.status,
+        date: s.created_at.toISOString().split('T')[0],
+        orderId: s.order_id?.slice(0, 8).toUpperCase()
+      }))
     };
 
     return NextResponse.json(mappedCustomer);

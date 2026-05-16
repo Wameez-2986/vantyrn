@@ -9,20 +9,21 @@ datasource db {
 }
 
 model AdminUser {
-  id               String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name             String              @db.VarChar(255)
-  email            String              @unique @db.VarChar(255)
-  passwordHash     String              @map("password_hash")
-  createdAt        DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
-  addonRules       AddonPricingRule[]
-  alertsResolved   AdminAlert[]
-  interventions    OrderIntervention[]
-  platformConfigs  PlatformConfig[]
-  refunds          Refund[]
-  riderKycReviews  RiderKycReview[]
-  riderStatusLogs  RiderStatusLog[]
-  vendorKycReviews VendorKycReview[]
-  vendorStatusLogs VendorStatusLog[]
+  id                  String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name                String                @db.VarChar(255)
+  email               String                @unique @db.VarChar(255)
+  passwordHash        String                @map("password_hash")
+  createdAt           DateTime              @default(now()) @map("created_at") @db.Timestamptz(6)
+  addonRules          AddonPricingRule[]
+  admin_activity_logs admin_activity_logs[]
+  alertsResolved      AdminAlert[]
+  interventions       OrderIntervention[]
+  platformConfigs     PlatformConfig[]
+  refunds             Refund[]
+  riderKycReviews     RiderKycReview[]
+  riderStatusLogs     RiderStatusLog[]
+  vendorKycReviews    VendorKycReview[]
+  vendorStatusLogs    VendorStatusLog[]
 
   @@map("admin_users")
   @@schema("admin")
@@ -250,7 +251,7 @@ model analytics_events {
 
 model carts {
   id             String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  customer_id    String?      @unique @db.Uuid
+  customer_id    String?      @db.Uuid
   vendor_id      String       @db.Uuid
   is_guest       Boolean      @default(false)
   is_active      Boolean      @default(true) @map("is_active")
@@ -258,10 +259,12 @@ model carts {
   checked_out_at DateTime?    @map("checked_out_at") @db.Timestamptz(6)
   created_at     DateTime     @default(now()) @db.Timestamptz(6)
   updated_at     DateTime     @default(now()) @db.Timestamptz(6)
-  guest_id       String?      @unique @db.VarChar(255)
+  guest_id       String?      @db.VarChar(255)
   cart_items     cart_items[]
   customers      customers?   @relation(fields: [customer_id], references: [id], onDelete: Cascade)
 
+  @@unique([customer_id, vendor_id])
+  @@unique([guest_id, vendor_id])
   @@schema("customer")
 }
 
@@ -296,7 +299,7 @@ model customers {
   addresses          addresses[]
   age_verifications  age_verifications?
   analytics_events   analytics_events[]
-  carts              carts?
+  carts              carts[]
   profiles           profiles?            @relation(fields: [profile_id], references: [id])
   feedback           feedback[]
   login_attempt_logs login_attempt_logs[]
@@ -428,6 +431,8 @@ model orders {
   preparing_at                DateTime?                 @db.Timestamptz(6)
   ready_at                    DateTime?                 @db.Timestamptz(6)
   sfx_order_id                BigInt?                   @unique
+  refund_amount               Decimal?                  @db.Decimal(10, 2)
+  refund_status               String?                   @default("NONE") @db.VarChar(20)
   analytics_events            analytics_events[]
   feedback                    feedback?
   order_items                 order_items[]
@@ -467,10 +472,13 @@ model support_requests {
   id                 String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   customer_id        String?    @db.Uuid
   order_id           String?    @db.Uuid
-  option_label       String?
   is_escalated       Boolean    @default(false)
   whatsapp_ticket_id String?    @db.VarChar(255)
   created_at         DateTime   @default(now()) @db.Timestamptz(6)
+  issue_type         String?    @db.VarChar(100)
+  message            String?
+  resolved_at        DateTime?  @db.Timestamptz(6)
+  status             String     @default("PENDING") @db.VarChar(30)
   customers          customers? @relation(fields: [customer_id], references: [id])
   orders             orders?    @relation(fields: [order_id], references: [id])
 
@@ -510,6 +518,7 @@ model product_templates {
   template_name String   @map("template_name") @db.VarChar(255)
   template_data Json     @map("template_data")
   created_at    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  is_skeletal   Boolean  @default(false)
   vendors       vendors? @relation(fields: [vendor_id], references: [id], onDelete: Cascade)
 
   @@index([vendor_id])
@@ -571,7 +580,6 @@ model products {
   vendor_id                    String                         @db.Uuid
   name                         String                         @db.VarChar(255)
   description                  String?
-  category                     String?                        @db.VarChar(100)
   product_type                 String?                        @db.VarChar(100)
   base_price                   Decimal                        @db.Decimal(10, 2)
   is_restricted                Boolean?                       @default(false)
@@ -582,12 +590,14 @@ model products {
   updated_at                   DateTime?                      @default(now()) @db.Timestamptz(6)
   customization_type           CustomizationType              @default(NORMAL)
   is_customizable              Boolean                        @default(false)
+  category                     String?                        @db.VarChar(100)
   product_addons               product_addons[]
   product_customization_groups product_customization_groups[]
   product_images               product_images[]
   product_review_snapshots     product_review_snapshots[]
   product_review_submissions   product_review_submissions[]
   vendors                      vendors                        @relation(fields: [vendor_id], references: [id], onDelete: Cascade)
+  categories                   categories[]                   @relation("ProductToCategory")
 
   @@schema("vendor_delivery")
 }
@@ -788,14 +798,16 @@ model vendors {
   commissionModel            CommissionModel?             @map("commission_model")
   commissionRate             Decimal                      @default(5.0) @map("commission_rate") @db.Decimal(5, 2)
   sfx_store_code             String?                      @db.VarChar(100)
-  shadowfax_linked           Boolean                      @default(false)
-  delivery_provider          String                       @default("SHADOWFAX") @db.VarChar(50)
   city                       String?                      @db.VarChar(100)
   pincode                    String?                      @db.VarChar(10)
+  delivery_provider          String                       @default("SHADOWFAX") @db.VarChar(50)
+  shadowfax_linked           Boolean                      @default(false)
   orders                     orders[]
+  categories                 categories[]
   product_review_submissions product_review_submissions[]
   product_templates          product_templates[]
   products                   products[]
+  vendor_assigned_templates  vendor_assigned_templates[]
   vendor_bank_details        vendor_bank_details?
   vendor_breaches            vendor_breaches[]
   vendor_compliance_flags    vendor_compliance_flags[]
@@ -806,7 +818,6 @@ model vendors {
   vendor_ratings_summary     vendor_ratings_summary?
   vendor_sla_metrics         vendor_sla_metrics?
   vendor_support_requests    vendor_support_requests[]
-  vendor_assigned_templates  vendor_assigned_templates[]
   profiles                   profiles?                    @relation(fields: [profile_id], references: [id])
 
   @@schema("vendor_delivery")
@@ -818,9 +829,9 @@ model admin_notifications {
   description  String
   type         NotificationType
   is_read      Boolean          @default(false)
-  is_cleared   Boolean          @default(false)
   created_at   DateTime         @default(now()) @db.Timestamptz(6)
   reference_id String?          @unique
+  is_cleared   Boolean          @default(false)
 
   @@schema("admin")
 }
@@ -902,6 +913,8 @@ model product_customization_options {
   allow_quantity               Boolean                      @default(false)
   free_limit                   Int                          @default(0)
   image_url                    String?
+  conflicts                    Json?
+  linked_product_id            String?                      @db.Uuid
   product_customization_groups product_customization_groups @relation(fields: [group_id], references: [id], onDelete: Cascade)
 
   @@schema("vendor_delivery")
@@ -943,6 +956,44 @@ model vendor_assigned_templates {
   @@schema("vendor_delivery")
 }
 
+model admin_activity_logs {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  admin_id    String    @db.Uuid
+  action      String    @db.VarChar(255)
+  entity_type String?   @db.VarChar(100)
+  entity_id   String?   @db.Uuid
+  metadata    Json?
+  timestamp   DateTime  @default(now()) @db.Timestamptz(6)
+  admin_users AdminUser @relation(fields: [admin_id], references: [id])
+
+  @@index([admin_id])
+  @@schema("admin")
+}
+
+model admin_login_attempts {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email        String   @db.VarChar(255)
+  ip_address   String?  @db.VarChar(100)
+  is_success   Boolean  @default(false)
+  attempted_at DateTime @default(now()) @db.Timestamptz(6)
+
+  @@index([email])
+  @@schema("admin")
+}
+
+model categories {
+  id            String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  vendor_id     String?    @db.Uuid
+  name          String     @unique @db.VarChar(100)
+  description   String?
+  display_order Int        @default(0)
+  created_at    DateTime   @default(now()) @db.Timestamptz(6)
+  vendors       vendors?   @relation(fields: [vendor_id], references: [id], onDelete: Cascade)
+  products      products[] @relation("ProductToCategory")
+
+  @@schema("vendor_delivery")
+}
+
 enum ReviewDecision {
   approved
   rejected
@@ -973,7 +1024,6 @@ enum PricingScope {
 }
 
 enum AccountStatus {
-  PENDING
   KYC_SUBMITTED
   UNDER_REVIEW
   APPROVED
@@ -981,6 +1031,7 @@ enum AccountStatus {
   SUSPENDED
   DISABLED
   ACTIVE
+  PENDING
 
   @@schema("vendor_delivery")
 }

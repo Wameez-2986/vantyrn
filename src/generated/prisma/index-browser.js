@@ -418,7 +418,9 @@ exports.Prisma.OrdersScalarFieldEnum = {
   delivery_failure_reason: 'delivery_failure_reason',
   preparing_at: 'preparing_at',
   ready_at: 'ready_at',
-  sfx_order_id: 'sfx_order_id'
+  sfx_order_id: 'sfx_order_id',
+  refund_amount: 'refund_amount',
+  refund_status: 'refund_status'
 };
 
 exports.Prisma.Payment_transactionsScalarFieldEnum = {
@@ -436,10 +438,13 @@ exports.Prisma.Support_requestsScalarFieldEnum = {
   id: 'id',
   customer_id: 'customer_id',
   order_id: 'order_id',
-  option_label: 'option_label',
   is_escalated: 'is_escalated',
   whatsapp_ticket_id: 'whatsapp_ticket_id',
-  created_at: 'created_at'
+  created_at: 'created_at',
+  issue_type: 'issue_type',
+  message: 'message',
+  resolved_at: 'resolved_at',
+  status: 'status'
 };
 
 exports.Prisma.Product_addonsScalarFieldEnum = {
@@ -466,7 +471,8 @@ exports.Prisma.Product_templatesScalarFieldEnum = {
   category: 'category',
   template_name: 'template_name',
   template_data: 'template_data',
-  created_at: 'created_at'
+  created_at: 'created_at',
+  is_skeletal: 'is_skeletal'
 };
 
 exports.Prisma.Product_review_snapshotsScalarFieldEnum = {
@@ -509,7 +515,6 @@ exports.Prisma.ProductsScalarFieldEnum = {
   vendor_id: 'vendor_id',
   name: 'name',
   description: 'description',
-  category: 'category',
   product_type: 'product_type',
   base_price: 'base_price',
   is_restricted: 'is_restricted',
@@ -519,7 +524,8 @@ exports.Prisma.ProductsScalarFieldEnum = {
   created_at: 'created_at',
   updated_at: 'updated_at',
   customization_type: 'customization_type',
-  is_customizable: 'is_customizable'
+  is_customizable: 'is_customizable',
+  category: 'category'
 };
 
 exports.Prisma.ProfilesScalarFieldEnum = {
@@ -671,10 +677,10 @@ exports.Prisma.VendorsScalarFieldEnum = {
   commissionModel: 'commissionModel',
   commissionRate: 'commissionRate',
   sfx_store_code: 'sfx_store_code',
-  shadowfax_linked: 'shadowfax_linked',
-  delivery_provider: 'delivery_provider',
   city: 'city',
-  pincode: 'pincode'
+  pincode: 'pincode',
+  delivery_provider: 'delivery_provider',
+  shadowfax_linked: 'shadowfax_linked'
 };
 
 exports.Prisma.Admin_notificationsScalarFieldEnum = {
@@ -683,9 +689,9 @@ exports.Prisma.Admin_notificationsScalarFieldEnum = {
   description: 'description',
   type: 'type',
   is_read: 'is_read',
-  is_cleared: 'is_cleared',
   created_at: 'created_at',
-  reference_id: 'reference_id'
+  reference_id: 'reference_id',
+  is_cleared: 'is_cleared'
 };
 
 exports.Prisma.Vendor_breachesScalarFieldEnum = {
@@ -748,7 +754,9 @@ exports.Prisma.Product_customization_optionsScalarFieldEnum = {
   display_order: 'display_order',
   allow_quantity: 'allow_quantity',
   free_limit: 'free_limit',
-  image_url: 'image_url'
+  image_url: 'image_url',
+  conflicts: 'conflicts',
+  linked_product_id: 'linked_product_id'
 };
 
 exports.Prisma.Byo_templatesScalarFieldEnum = {
@@ -774,6 +782,33 @@ exports.Prisma.Vendor_assigned_templatesScalarFieldEnum = {
   vendor_id: 'vendor_id',
   template_id: 'template_id',
   assigned_at: 'assigned_at'
+};
+
+exports.Prisma.Admin_activity_logsScalarFieldEnum = {
+  id: 'id',
+  admin_id: 'admin_id',
+  action: 'action',
+  entity_type: 'entity_type',
+  entity_id: 'entity_id',
+  metadata: 'metadata',
+  timestamp: 'timestamp'
+};
+
+exports.Prisma.Admin_login_attemptsScalarFieldEnum = {
+  id: 'id',
+  email: 'email',
+  ip_address: 'ip_address',
+  is_success: 'is_success',
+  attempted_at: 'attempted_at'
+};
+
+exports.Prisma.CategoriesScalarFieldEnum = {
+  id: 'id',
+  vendor_id: 'vendor_id',
+  name: 'name',
+  description: 'description',
+  display_order: 'display_order',
+  created_at: 'created_at'
 };
 
 exports.Prisma.SortOrder = {
@@ -837,14 +872,14 @@ exports.VendorRejectReason = exports.$Enums.VendorRejectReason = {
 };
 
 exports.AccountStatus = exports.$Enums.AccountStatus = {
-  PENDING: 'PENDING',
   KYC_SUBMITTED: 'KYC_SUBMITTED',
   UNDER_REVIEW: 'UNDER_REVIEW',
   APPROVED: 'APPROVED',
   REJECTED: 'REJECTED',
   SUSPENDED: 'SUSPENDED',
   DISABLED: 'DISABLED',
-  ACTIVE: 'ACTIVE'
+  ACTIVE: 'ACTIVE',
+  PENDING: 'PENDING'
 };
 
 exports.CommissionModel = exports.$Enums.CommissionModel = {
@@ -916,7 +951,10 @@ exports.Prisma.ModelName = {
   product_customization_options: 'product_customization_options',
   byo_templates: 'byo_templates',
   byo_template_groups: 'byo_template_groups',
-  vendor_assigned_templates: 'vendor_assigned_templates'
+  vendor_assigned_templates: 'vendor_assigned_templates',
+  admin_activity_logs: 'admin_activity_logs',
+  admin_login_attempts: 'admin_login_attempts',
+  categories: 'categories'
 };
 
 /**

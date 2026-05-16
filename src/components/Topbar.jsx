@@ -110,34 +110,34 @@ export default function Topbar({ onMenuClick }) {
   };
 
   return (
-    <header className="h-20 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800 sticky top-0 z-40 px-4 md:px-8 flex items-center justify-between">
+    <header className="h-16 sm:h-20 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800 sticky top-0 z-40 px-3 sm:px-6 md:px-8 flex items-center justify-between">
       {/* Mobile Menu Icon */}
       <button 
         onClick={onMenuClick}
-        className="lg:hidden p-2 mr-2 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
+        className="lg:hidden p-2 mr-1 sm:mr-2 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
       >
-        <Menu className="w-6 h-6 text-swiggy-navy dark:text-zinc-400" />
+        <Menu className="w-5 h-5 sm:w-6 sm:h-6 text-swiggy-navy dark:text-zinc-400" />
       </button>
 
       {/* Page Title */}
-      <div>
-        <h1 className="text-2xl font-bold text-swiggy-navy dark:text-white tracking-tight">
+      <div className="flex-1 min-w-0 mr-2">
+        <h1 className="text-lg sm:text-2xl font-bold text-swiggy-navy dark:text-white tracking-tight truncate">
           {pageTitle}
         </h1>
-        <p className="text-xs font-semibold text-swiggy-gray uppercase tracking-widest mt-1">
+        <p className="text-[8px] sm:text-xs font-semibold text-swiggy-gray uppercase tracking-widest mt-0.5 sm:mt-1 truncate">
           Welcome back, Admin
         </p>
       </div>
 
       {/* Right Side Actions */}
-      <div className="flex items-center gap-4 md:gap-6">
+      <div className="flex items-center gap-2 sm:gap-4 md:gap-6">
         {/* Live Status Badge */}
-        <div className="hidden sm:flex items-center gap-2 bg-emerald-50 dark:bg-emerald-950/30 px-3 py-1.5 rounded-full border border-emerald-100 dark:border-emerald-900/50 shadow-sm shadow-emerald-100/50">
+        <div className="hidden xs:flex items-center gap-1.5 sm:gap-2 bg-emerald-50 dark:bg-emerald-950/30 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full border border-emerald-100 dark:border-emerald-900/50 shadow-sm shadow-emerald-100/50">
           <div className="relative">
-            <div className="w-2 h-2 rounded-full bg-emerald-500" />
-            <div className="absolute inset-0 w-2 h-2 rounded-full bg-emerald-500 animate-ping opacity-75" />
+            <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-emerald-500" />
+            <div className="absolute inset-0 w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-emerald-500 animate-ping opacity-75" />
           </div>
-          <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest">Live Connected</span>
+          <span className="text-[8px] sm:text-[10px] font-bold text-emerald-600 uppercase tracking-widest whitespace-nowrap">Live Connected</span>
         </div>
 
         {/* Search Bar (Premium addition) */}
@@ -231,10 +231,10 @@ export default function Topbar({ onMenuClick }) {
         {/* Admin Avatar Dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger className="outline-none">
-            <div className="flex items-center gap-3 p-1 pr-3 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors">
-              <Avatar className="h-10 w-10 border-2 border-swiggy-orange/20">
+            <div className="flex items-center gap-2 sm:gap-3 p-0.5 sm:p-1 sm:pr-3 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors">
+              <Avatar className="h-8 w-8 sm:h-10 sm:h-10 border-2 border-swiggy-orange/20">
                 <AvatarImage src="" />
-                <AvatarFallback className="bg-swiggy-orange/10 text-swiggy-orange font-semibold">SY</AvatarFallback>
+                <AvatarFallback className="bg-swiggy-orange/10 text-swiggy-orange font-semibold text-xs sm:text-sm">SY</AvatarFallback>
               </Avatar>
               <div className="hidden sm:block text-left">
                 <p className="text-sm font-bold text-swiggy-navy dark:text-white leading-none">Syed W.</p>
