@@ -31,6 +31,7 @@ import {
 } from "lucide-react";
 import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api';
 import { toast } from "sonner";
+import { CommissionManagement } from "@/components/vendors/CommissionManagement";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -128,9 +129,7 @@ export default function VendorDetailPage() {
   const [isRejectDialogOpen, setIsRejectDialogOpen] = useState(false);
   const [rejectReason, setRejectReason] = useState("");
   const [isFlagDialogOpen, setIsFlagDialogOpen] = useState(false);
-  const [isCommissionDialogOpen, setIsCommissionDialogOpen] = useState(false);
-  const [tempModel, setTempModel] = useState("");
-  const [tempRate, setTempRate] = useState("");
+
   const [sfxCode, setSfxCode] = useState("");
   const [isLinking, setIsLinking] = useState(false);
   const [earningsData, setEarningsData] = useState(null);
@@ -138,8 +137,6 @@ export default function VendorDetailPage() {
 
   useEffect(() => {
     if (vendor) {
-      setTempModel(vendor.commissionModel);
-      setTempRate(vendor.commissionRate?.toString());
       setSfxCode(vendor.sfxStoreCode || "");
     }
   }, [vendor]);
@@ -264,24 +261,7 @@ export default function VendorDetailPage() {
     }
   };
 
-  const handleUpdateCommission = async () => {
-    try {
-      const res = await fetch(`/api/vendors/${vendorId}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          action: "UPDATE_COMMISSION", 
-          commissionModel: tempModel, 
-          commissionRate: parseFloat(tempRate) 
-        })
-      });
-      if (!res.ok) throw new Error("Failed to update commission settings");
-      toast.success("Commission settings updated");
-      setIsCommissionDialogOpen(false);
-    } catch (error) {
-      toast.error(error.message);
-    }
-  };
+
 
   const handleLinkShadowfax = async () => {
     if (!sfxCode) return toast.error("Please enter a Shadowfax Store Code");
@@ -618,41 +598,7 @@ export default function VendorDetailPage() {
                </CardContent>
             </Card>
 
-            <Card className="rounded-3xl border-zinc-100 shadow-sm overflow-hidden">
-               <CardHeader className="p-8 border-b border-zinc-50 bg-swiggy-navy">
-                 <div className="flex items-center justify-between">
-                   <CardTitle className="text-lg font-black text-white inline-flex items-center gap-2">
-                      <CreditCard className="w-5 h-5 text-swiggy-orange" /> Commission Settings
-                    </CardTitle>
-                    <Button 
-                     size="sm" 
-                     className="h-8 bg-swiggy-orange hover:bg-swiggy-orange/90 text-white font-black rounded-lg shadow-sm"
-                     onClick={() => setIsCommissionDialogOpen(true)}
-                    >
-                      Update
-                    </Button>
-                 </div>
-               </CardHeader>
-               <CardContent className="p-6">
-                 <div className="space-y-4">
-                   <div className="p-4 rounded-2xl bg-zinc-50 border border-zinc-100">
-                     <p className="text-[10px] font-black uppercase tracking-widest text-swiggy-gray mb-1">Model</p>
-                     <p className="text-base font-black text-swiggy-navy">
-                       {vendor.commissionModel === 'ADD_ON' ? 'Add-on Model' : 'Deducted Model'}
-                     </p>
-                     <p className="text-xs text-swiggy-gray mt-1">
-                       {vendor.commissionModel === 'ADD_ON' 
-                         ? 'Platform fee is added on top of vendor price. Customer pays more.' 
-                         : 'Platform fee is deducted from vendor price. Vendor receives less.'}
-                     </p>
-                   </div>
-                   <div className="p-4 rounded-2xl bg-zinc-50 border border-zinc-100">
-                     <p className="text-[10px] font-black uppercase tracking-widest text-swiggy-gray mb-1">Rate</p>
-                     <p className="text-base font-black text-swiggy-navy">{vendor.commissionRate}%</p>
-                   </div>
-                 </div>
-               </CardContent>
-            </Card>
+            <CommissionManagement vendor={vendor} vendorId={vendorId} />
 
             <Card className="rounded-3xl border-zinc-100 shadow-sm overflow-hidden">
                <CardHeader className="p-8 border-b border-zinc-50 bg-swiggy-navy">
@@ -1062,48 +1008,7 @@ export default function VendorDetailPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Update Commission Dialog */}
-      <Dialog open={isCommissionDialogOpen} onOpenChange={setIsCommissionDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-black text-swiggy-navy">Commission Settings</DialogTitle>
-            <DialogDescription className="font-medium">
-              Update how platform fees are applied to this vendor's products.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-6 py-4">
-            <div className="space-y-2">
-              <Label className="font-bold">Commission Model</Label>
-              <Select value={tempModel} onValueChange={setTempModel}>
-                <SelectTrigger className="h-12 rounded-xl">
-                  <SelectValue placeholder="Select model" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="ADD_ON">Add-on Model (Added to price)</SelectItem>
-                  <SelectItem value="DEDUCTED">Deducted Model (Deducted from price)</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label className="font-bold">Commission Rate (%)</Label>
-              <div className="relative">
-                <input 
-                  type="number"
-                  value={tempRate}
-                  onChange={(e) => setTempRate(e.target.value)}
-                  className="w-full h-12 rounded-xl border border-zinc-200 px-4 font-bold focus:ring-2 focus:ring-swiggy-orange outline-none"
-                  placeholder="e.g. 5.0"
-                />
-                <span className="absolute right-4 top-1/2 -translate-y-1/2 font-bold text-swiggy-gray">%</span>
-              </div>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="ghost" className="font-bold" onClick={() => setIsCommissionDialogOpen(false)}>Cancel</Button>
-            <Button className="bg-swiggy-orange hover:bg-swiggy-orange/90 font-black px-8" onClick={handleUpdateCommission}>Save Settings</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+
     </div>
   );
 }
