@@ -140,16 +140,16 @@ export default function CustomerDetailPage() {
         <div className="lg:col-span-2 space-y-6">
            <Tabs defaultValue="orders" className="space-y-6">
               <TabsList className="bg-white dark:bg-zinc-900 border border-zinc-100 p-1 rounded-2xl h-12 shadow-sm w-full lg:w-fit flex overflow-x-auto no-scrollbar scrollbar-hide items-center justify-start min-w-0">
-                <TabsTrigger value="orders" className="rounded-xl px-4 sm:px-6 font-black text-[10px] sm:text-xs uppercase tracking-widest h-full data-[state=active]:bg-swiggy-orange data-[state=active]:text-white transition-all whitespace-nowrap">
+                <TabsTrigger value="orders" className="rounded-xl px-3 sm:px-6 font-black text-[9px] sm:text-xs uppercase tracking-widest h-full data-[state=active]:bg-swiggy-orange data-[state=active]:text-white transition-all whitespace-nowrap">
                   Orders ({customer.orders?.length || 0})
                 </TabsTrigger>
-                <TabsTrigger value="addresses" className="rounded-xl px-4 sm:px-6 font-black text-[10px] sm:text-xs uppercase tracking-widest h-full data-[state=active]:bg-swiggy-orange data-[state=active]:text-white transition-all whitespace-nowrap">
+                <TabsTrigger value="addresses" className="rounded-xl px-3 sm:px-6 font-black text-[9px] sm:text-xs uppercase tracking-widest h-full data-[state=active]:bg-swiggy-orange data-[state=active]:text-white transition-all whitespace-nowrap">
                   Addresses ({customer.addresses?.length || 0})
                 </TabsTrigger>
-                <TabsTrigger value="feedback" className="rounded-xl px-4 sm:px-6 font-black text-[10px] sm:text-xs uppercase tracking-widest h-full data-[state=active]:bg-swiggy-orange data-[state=active]:text-white transition-all whitespace-nowrap">
+                <TabsTrigger value="feedback" className="rounded-xl px-3 sm:px-6 font-black text-[9px] sm:text-xs uppercase tracking-widest h-full data-[state=active]:bg-swiggy-orange data-[state=active]:text-white transition-all whitespace-nowrap">
                   Feedback ({customer.feedback?.length || 0})
                 </TabsTrigger>
-                <TabsTrigger value="support" className="rounded-xl px-4 sm:px-6 font-black text-[10px] sm:text-xs uppercase tracking-widest h-full data-[state=active]:bg-swiggy-orange data-[state=active]:text-white transition-all whitespace-nowrap">
+                <TabsTrigger value="support" className="rounded-xl px-3 sm:px-6 font-black text-[9px] sm:text-xs uppercase tracking-widest h-full data-[state=active]:bg-swiggy-orange data-[state=active]:text-white transition-all whitespace-nowrap">
                   Support ({customer.support?.length || 0})
                 </TabsTrigger>
               </TabsList>

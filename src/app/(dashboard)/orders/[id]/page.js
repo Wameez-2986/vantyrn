@@ -382,7 +382,7 @@ export default function OrderDetailPage() {
 
       {/* Exception Modals */}
       <Dialog open={isExceptionModalOpen} onOpenChange={setIsExceptionModalOpen}>
-        <DialogContent className="sm:max-w-md rounded-3xl">
+        <DialogContent className="sm:max-w-md w-[95vw] rounded-2xl sm:rounded-3xl p-4 sm:p-6 border-none shadow-2xl">
           <DialogHeader>
             <DialogTitle className="text-2xl font-black text-swiggy-navy">Manage Exception</DialogTitle>
             <DialogDescription className="font-medium text-swiggy-gray">

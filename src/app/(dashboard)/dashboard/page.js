@@ -93,22 +93,30 @@ export default function DashboardPage() {
             [1, 2, 3].map((i) => <Skeleton key={i} className="h-20 w-full rounded-2xl" />)
           ) : recentOrders.length > 0 ? (
             recentOrders.map((order) => (
-              <div key={order.id} className="flex flex-col xs:flex-row xs:items-center justify-between p-3 sm:p-4 rounded-2xl hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors border border-transparent hover:border-zinc-100 dark:hover:border-zinc-800 group gap-3">
-                <div className="flex items-center gap-3 sm:gap-4">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-zinc-100 dark:bg-zinc-800 rounded-lg sm:rounded-xl flex items-center justify-center font-bold text-xs sm:text-sm text-swiggy-navy dark:text-white">
-                    #{order.id}
+              <div key={order.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-2xl hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-all border border-zinc-100 dark:border-zinc-800 shadow-sm hover:shadow-md group gap-4">
+                <div className="flex items-center gap-4 min-w-0">
+                  <div className="w-12 h-12 flex-shrink-0 bg-zinc-100 dark:bg-zinc-800 rounded-xl flex items-center justify-center font-black text-[10px] text-swiggy-navy dark:text-white px-2 border border-zinc-200 dark:border-zinc-700">
+                    <span className="truncate">#{order.id.slice(0, 8).toUpperCase()}</span>
                   </div>
-                  <div className="min-w-0">
-                    <h4 className="font-bold text-sm sm:text-base text-swiggy-navy dark:text-white truncate">{order.customerName}</h4>
-                    <div className="flex items-center gap-2 text-[10px] sm:text-xs text-swiggy-gray font-medium">
-                      <Clock className="w-3 h-3" /> {new Date(order.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} • <Badge variant="secondary" className="text-[9px] sm:text-[10px] py-0 px-1">{order.paymentMethod}</Badge>
+                  <div className="min-w-0 flex-1">
+                    <h4 className="font-black text-sm sm:text-base text-swiggy-navy dark:text-white truncate uppercase tracking-tight">{order.customerName}</h4>
+                    <div className="flex flex-wrap items-center gap-2 text-[10px] text-swiggy-gray font-bold uppercase tracking-wider mt-0.5">
+                      <div className="flex items-center gap-1">
+                        <Clock className="w-3 h-3" /> 
+                        {new Date(order.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </div>
+                      <span className="hidden xs:inline w-1 h-1 rounded-full bg-zinc-300" />
+                      <Badge variant="secondary" className="text-[9px] py-0 px-2 font-black border-none bg-zinc-100 text-zinc-500">
+                        {order.paymentMethod}
+                      </Badge>
                     </div>
                   </div>
                 </div>
-                <div className="flex xs:flex-col justify-between items-center xs:items-end gap-1">
-                  <p className="font-bold text-sm sm:text-base text-swiggy-navy dark:text-white">{order.amount}</p>
-                  <div className="flex items-center gap-1.5 text-[10px] font-bold text-emerald-500 uppercase tracking-tight">
-                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> {order.status}
+                <div className="flex flex-row sm:flex-col justify-between items-center sm:items-end gap-2 border-t sm:border-t-0 pt-3 sm:pt-0 border-zinc-50 mt-1 sm:mt-0">
+                  <p className="font-black text-base sm:text-lg text-swiggy-navy dark:text-white">{order.amount}</p>
+                  <div className="flex items-center gap-1.5 text-[10px] font-black text-emerald-500 uppercase tracking-widest bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100">
+                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> 
+                    {order.status.replace(/_/g, ' ')}
                   </div>
                 </div>
               </div>

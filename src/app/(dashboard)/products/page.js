@@ -514,26 +514,27 @@ export default function ProductsPage() {
                 Add Product
               </Button>
             </DialogTrigger>
-          <DialogContent className="sm:max-w-[700px] max-h-[90vh] flex flex-col">
+          <DialogContent className="sm:max-w-[700px] w-[95vw] max-h-[90vh] flex flex-col p-4 sm:p-6 rounded-2xl sm:rounded-3xl border-none shadow-2xl">
             <form onSubmit={handleAddProduct} className="flex flex-col min-h-0 flex-1">
-              <DialogHeader className="flex-shrink-0">
-                <DialogTitle className="text-2xl font-black text-swiggy-navy">Add New Product</DialogTitle>
-                <DialogDescription className="font-medium text-swiggy-gray">
+              <DialogHeader className="flex-shrink-0 mb-4">
+                <DialogTitle className="text-xl sm:text-2xl font-black text-swiggy-navy uppercase tracking-tight">Add New Product</DialogTitle>
+                <DialogDescription className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-swiggy-gray">
                   Added products will be automatically approved.
                 </DialogDescription>
               </DialogHeader>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 py-4 sm:py-6 border-y border-zinc-100 my-4 overflow-y-auto flex-1 pr-1">
-                <div className="md:col-span-2 space-y-2">
-                  <Label htmlFor="name" className="font-bold">Product Name</Label>
-                  <Input id="name" name="name" placeholder="e.g. Garlic Naan" required />
+              <div className="flex-1 overflow-y-auto pr-2 sm:pr-4 -mr-2 sm:-mr-4 space-y-4 sm:space-y-6 py-2 border-y border-zinc-100">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                <div className="md:col-span-2 space-y-1.5 sm:space-y-2">
+                  <Label htmlFor="name" className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-zinc-500">Product Name</Label>
+                  <Input id="name" name="name" placeholder="e.g. Garlic Naan" required className="h-10 sm:h-12 rounded-xl font-bold text-sm" />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="vendorName" className="font-bold">Vendor Name</Label>
+                <div className="space-y-1.5 sm:space-y-2">
+                  <Label htmlFor="vendorName" className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-zinc-500">Vendor Name</Label>
                   <Select name="vendorName" required value={selectedVendorForAdd} onValueChange={setSelectedVendorForAdd}>
-                    <SelectTrigger>
+                    <SelectTrigger className="h-10 sm:h-12 rounded-xl font-bold text-sm">
                       <SelectValue placeholder="Select Vendor" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="rounded-xl">
                       {vendors && vendors.length > 0 ? (
                         vendors.map(vendor => (
                           <SelectItem key={vendor.id} value={vendor.id}>
@@ -546,17 +547,17 @@ export default function ProductsPage() {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="price" className="font-bold">Price (₹)</Label>
-                  <Input id="price" name="price" type="number" placeholder="100" min="0" required />
+                <div className="space-y-1.5 sm:space-y-2">
+                  <Label htmlFor="price" className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-zinc-500">Price (₹)</Label>
+                  <Input id="price" name="price" type="number" placeholder="100" min="0" required className="h-10 sm:h-12 rounded-xl font-bold text-sm" />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="category" className="font-bold">Category</Label>
+                <div className="space-y-1.5 sm:space-y-2">
+                  <Label htmlFor="category" className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-zinc-500">Category</Label>
                   <Select name="category" required>
-                    <SelectTrigger>
+                    <SelectTrigger className="h-10 sm:h-12 rounded-xl font-bold text-sm">
                       <SelectValue placeholder="Select Category" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="rounded-xl">
                       <SelectItem value="North Indian">North Indian</SelectItem>
                       <SelectItem value="South Indian">South Indian</SelectItem>
                       <SelectItem value="Fast Food">Fast Food</SelectItem>
@@ -565,13 +566,13 @@ export default function ProductsPage() {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="type" className="font-bold">Type</Label>
+                <div className="space-y-1.5 sm:space-y-2">
+                  <Label htmlFor="type" className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-zinc-500">Type</Label>
                   <Select name="type" required>
-                    <SelectTrigger>
+                    <SelectTrigger className="h-10 sm:h-12 rounded-xl font-bold text-sm">
                       <SelectValue placeholder="Select Type" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="rounded-xl">
                       <SelectItem value="Veg">Veg</SelectItem>
                       <SelectItem value="Non-Veg">Non-Veg</SelectItem>
                       <SelectItem value="Vegan">Vegan</SelectItem>
@@ -613,25 +614,25 @@ export default function ProductsPage() {
                     <button type="button" className="text-xs text-red-500 font-bold mt-1" onClick={() => { setAddImageFile(null); setAddImagePreview(""); }}>Remove image</button>
                   )}
                 </div>
-                <div className="md:col-span-2 space-y-2">
-                  <Label htmlFor="description" className="font-bold">Description</Label>
-                  <Textarea id="description" name="description" placeholder="Product details..." />
+                <div className="md:col-span-2 space-y-2 sm:space-y-3">
+                  <Label htmlFor="description" className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-zinc-500">Description</Label>
+                  <Textarea id="description" name="description" placeholder="Product details..." className="min-h-[80px] sm:min-h-[100px] rounded-xl font-bold text-sm resize-none bg-zinc-50/50" />
                 </div>
-                <div className="md:col-span-2 flex flex-col gap-4 border-t border-zinc-100 pt-4">
+                <div className="md:col-span-2 flex flex-col gap-4 border-t border-zinc-100 pt-4 sm:pt-6">
                   <div className="flex flex-col gap-3">
-                    <Label className="font-bold text-swiggy-navy">Customization Type</Label>
-                    <div className="flex flex-wrap items-center gap-6">
-                      <label className="flex items-center gap-2 cursor-pointer">
+                    <Label className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-swiggy-navy">Customization Type</Label>
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6">
+                      <label className="flex items-center gap-3 cursor-pointer p-3 sm:p-0 bg-zinc-50 sm:bg-transparent rounded-xl sm:rounded-none border border-zinc-100 sm:border-none">
                         <input type="radio" name="customizationType" value="NONE" checked={customizationType === "NONE"} onChange={() => setCustomizationType("NONE")} className="w-4 h-4 text-swiggy-orange focus:ring-swiggy-orange" />
-                        <span className="text-sm font-bold text-zinc-700">Standard Product</span>
+                        <span className="text-xs sm:text-sm font-black text-swiggy-navy uppercase tracking-tight">Standard</span>
                       </label>
-                      <label className="flex items-center gap-2 cursor-pointer">
+                      <label className="flex items-center gap-3 cursor-pointer p-3 sm:p-0 bg-zinc-50 sm:bg-transparent rounded-xl sm:rounded-none border border-zinc-100 sm:border-none">
                         <input type="radio" name="customizationType" value="NORMAL" checked={customizationType === "NORMAL"} onChange={() => setCustomizationType("NORMAL")} className="w-4 h-4 text-swiggy-orange focus:ring-swiggy-orange" />
-                        <span className="text-sm font-bold text-zinc-700">Customizable (Add-ons)</span>
+                        <span className="text-xs sm:text-sm font-black text-swiggy-navy uppercase tracking-tight">Add-ons</span>
                       </label>
-                      <label className="flex items-center gap-2 cursor-pointer">
+                      <label className="flex items-center gap-3 cursor-pointer p-3 sm:p-0 bg-zinc-50 sm:bg-transparent rounded-xl sm:rounded-none border border-zinc-100 sm:border-none">
                         <input type="radio" name="customizationType" value="BUILD_YOUR_OWN" checked={customizationType === "BUILD_YOUR_OWN"} onChange={() => setCustomizationType("BUILD_YOUR_OWN")} className="w-4 h-4 text-swiggy-orange focus:ring-swiggy-orange" />
-                        <span className="text-sm font-bold text-zinc-700">Build Your Own (Template)</span>
+                        <span className="text-xs sm:text-sm font-black text-swiggy-navy uppercase tracking-tight">Template</span>
                       </label>
                     </div>
                   </div>
@@ -796,7 +797,8 @@ export default function ProductsPage() {
                   )}
                 </div>
               </div>
-              <DialogFooter className="flex-shrink-0 pt-2">
+            </div>
+            <DialogFooter className="flex-shrink-0 pt-2">
                 <Button type="button" variant="ghost" className="font-bold" onClick={() => { setIsAddModalOpen(false); setAddImageFile(null); setAddImagePreview(""); }}>Cancel</Button>
                 <Button type="submit" disabled={uploading} className="bg-swiggy-orange hover:bg-swiggy-orange/90 font-black px-8">{uploading ? "Saving..." : "Save Product"}</Button>
               </DialogFooter>
