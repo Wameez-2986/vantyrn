@@ -54,7 +54,6 @@ import { cn } from "@/lib/utils";
 // Mock Data removed
 
 const STATUS_CONFIG = {
-  PAYMENT_SUCCESSFUL: { label: "Pending Vendor", color: "bg-amber-100 text-amber-700 border-amber-200" },
   PENDING_VENDOR: { label: "Pending Vendor", color: "bg-amber-100 text-amber-700 border-amber-200" },
   ACCEPTED: { label: "Accepted", color: "bg-sky-100 text-sky-700 border-sky-200" },
   PREPARING: { label: "Preparing", color: "bg-yellow-100 text-yellow-700 border-yellow-200" },
@@ -136,9 +135,11 @@ export default function OrdersPage() {
       // Status Filter Dropdown
       if (statusFilter !== "ALL") {
         if (statusFilter === "FLAGGED") {
-             if (!order.isFlagged) return false;
+          if (!order.isFlagged) return false;
+        } else if (statusFilter === "PENDING_VENDOR") {
+          return order.status === "PENDING_VENDOR" || order.status === "PAYMENT_SUCCESSFUL";
         } else if (order.status !== statusFilter) {
-             return false;
+          return false;
         }
       }
 
@@ -190,7 +191,8 @@ export default function OrdersPage() {
       accessorKey: "status",
       header: "Status",
       cell: ({ row }) => {
-        const config = STATUS_CONFIG[row.original.status] || { label: row.original.status, color: "bg-gray-100 text-gray-700 border-gray-200" };
+        const statusKey = row.original.status === "PAYMENT_SUCCESSFUL" ? "PENDING_VENDOR" : row.original.status;
+        const config = STATUS_CONFIG[statusKey] || { label: row.original.status, color: "bg-gray-100 text-gray-700 border-gray-200" };
         return (
           <Badge className={`${config.color} border font-black text-[9px] uppercase tracking-widest px-2 py-0.5`}>
             {config.label}
@@ -305,7 +307,7 @@ export default function OrdersPage() {
               <SelectContent>
                 <SelectItem value="ALL">All Statuses</SelectItem>
                 <SelectItem value="FLAGGED" className="text-amber-600 font-black">Flagged Only</SelectItem>
-                {Object.entries(STATUS_CONFIG).map(([key, value]) => (
+                {Object.entries(STATUS_CONFIG).filter(([key]) => key !== "FLAGGED").map(([key, value]) => (
                   <SelectItem key={key} value={key}>{value.label}</SelectItem>
                 ))}
               </SelectContent>

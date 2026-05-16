@@ -15,7 +15,8 @@ export async function GET() {
         business_category: true,
         account_status: true,
         online_status: true,
-        created_at: true
+        created_at: true,
+        sfx_store_code: true
       },
       orderBy: { created_at: 'desc' }
     });
@@ -25,6 +26,7 @@ export async function GET() {
       businessName: v.business_name,
       ownerName: v.owner_name,
       phone: v.phone,
+      sfxStoreCode: v.sfx_store_code,
       category: v.business_category || "General",
       status: v.account_status.toUpperCase(),
       kycStatus: v.account_status.toUpperCase(), // Using account_status as proxy

@@ -54,17 +54,19 @@ export function CommissionManagement({ vendor, vendorId }) {
   return (
     <>
       <Card className="rounded-[2.5rem] border-zinc-100 shadow-xl overflow-hidden group hover:shadow-2xl transition-all duration-500">
-        <CardHeader className="p-8 border-b border-zinc-50 bg-swiggy-navy relative overflow-hidden">
+        <CardHeader className="p-6 sm:p-8 border-b border-zinc-50 bg-swiggy-navy relative">
           <div className="absolute top-0 right-0 w-32 h-32 bg-swiggy-orange/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
-          <div className="flex items-center justify-between relative z-10">
-            <CardTitle className="text-xl font-black text-white inline-flex items-center gap-4">
-              <div className="w-12 h-12 rounded-full border-2 border-swiggy-orange/30 flex items-center justify-center bg-swiggy-orange/10 shadow-inner">
+          <div className="flex flex-wrap items-center justify-between gap-4 relative z-10">
+            <div className="flex items-center gap-4 flex-1 min-w-[240px]">
+              <div className="w-12 h-12 rounded-full border-2 border-swiggy-orange/30 flex items-center justify-center bg-swiggy-orange/10 shadow-inner shrink-0">
                 <CreditCard className="w-5 h-5 text-swiggy-orange" />
               </div>
-              Commission Settings
-            </CardTitle>
+              <CardTitle className="text-xl font-black text-white leading-tight">
+                Commission Settings
+              </CardTitle>
+            </div>
             <Button 
-              className="bg-swiggy-orange hover:bg-swiggy-orange/90 text-white font-black px-8 rounded-2xl shadow-lg shadow-swiggy-orange/30 h-12 transition-all duration-300 hover:scale-[1.05] active:scale-[0.95]"
+              className="shrink-0 bg-swiggy-orange hover:bg-swiggy-orange/90 text-white font-black px-8 rounded-2xl shadow-lg shadow-swiggy-orange/30 h-12 transition-all duration-300 hover:scale-[1.05] active:scale-[0.95]"
               onClick={() => setIsCommissionDialogOpen(true)}
             >
               Update
@@ -97,8 +99,8 @@ export function CommissionManagement({ vendor, vendorId }) {
       </Card>
 
       <Dialog open={isCommissionDialogOpen} onOpenChange={setIsCommissionDialogOpen}>
-        <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl animate-in zoom-in-95 duration-300">
-          <div className="p-10 pb-4">
+        <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl animate-in zoom-in-95 duration-300 max-h-[90vh] flex flex-col">
+          <div className="p-10 pb-4 shrink-0">
             <DialogHeader>
               <DialogTitle className="text-3xl font-black text-swiggy-navy tracking-tight">Platform Commission Model</DialogTitle>
               <DialogDescription className="text-sm font-medium text-swiggy-gray mt-3">
@@ -107,7 +109,7 @@ export function CommissionManagement({ vendor, vendorId }) {
             </DialogHeader>
           </div>
 
-          <div className="px-10 py-6 space-y-5">
+          <div className="px-10 py-6 space-y-5 overflow-y-auto flex-1 scrollbar-hide">
             {/* Add-on Model Card */}
             <div 
               onClick={() => setTempModel('ADD_ON')}
@@ -179,7 +181,7 @@ export function CommissionManagement({ vendor, vendorId }) {
             </div>
           </div>
 
-          <div className="p-10 bg-zinc-50/50 border-t border-zinc-100 flex gap-4">
+          <div className="p-10 bg-zinc-50/50 border-t border-zinc-100 flex gap-4 shrink-0">
             <Button 
               variant="ghost" 
               className="flex-1 h-16 rounded-[1.25rem] font-black text-swiggy-gray hover:bg-zinc-100 uppercase tracking-widest transition-all" 

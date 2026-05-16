@@ -105,12 +105,28 @@ export default function VendorsPage() {
       )
     },
     {
+      accessorKey: "id",
+      header: "Vendor ID",
+      cell: ({ row }) => (
+        <span className="font-mono text-[10px] font-bold text-zinc-400 uppercase">{row.original.id.slice(0, 8)}...</span>
+      )
+    },
+    {
       accessorKey: "ownerName",
       header: "Owner Name",
     },
     {
       accessorKey: "phone",
       header: "Phone",
+    },
+    {
+      accessorKey: "sfxStoreCode",
+      header: "SFX Code",
+      cell: ({ row }) => (
+        <Badge variant="outline" className="font-bold text-[10px] border-zinc-200 uppercase">
+          {row.original.sfxStoreCode || "N/A"}
+        </Badge>
+      )
     },
     {
       accessorKey: "category",

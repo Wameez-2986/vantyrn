@@ -492,6 +492,7 @@ export default function VendorDetailPage() {
                 <VendorMap lat={vendor.lat} lng={vendor.lng} />
               </CardContent>
             </Card>
+            <CommissionManagement vendor={vendor} vendorId={vendorId} />
           </div>
 
           <div className="space-y-6">
@@ -598,7 +599,6 @@ export default function VendorDetailPage() {
                </CardContent>
             </Card>
 
-            <CommissionManagement vendor={vendor} vendorId={vendorId} />
 
             <Card className="rounded-3xl border-zinc-100 shadow-sm overflow-hidden">
                <CardHeader className="p-8 border-b border-zinc-50 bg-swiggy-navy">
