@@ -102,6 +102,7 @@ export default function ProductsPage() {
   const [vendorTemplates, setVendorTemplates] = useState([]);
   const [selectedTemplateId, setSelectedTemplateId] = useState("");
   const [templateGroups, setTemplateGroups] = useState([]);
+  const [productDescription, setProductDescription] = useState("");
 
   useEffect(() => {
     if (selectedVendorForAdd && customizationType === "BUILD_YOUR_OWN") {
@@ -128,6 +129,9 @@ export default function ProductsPage() {
         options: []
       }));
       setTemplateGroups(groupsWithOpts);
+      if (template.description) {
+        setProductDescription(template.description);
+      }
     } else {
       setTemplateGroups([]);
     }
@@ -140,6 +144,8 @@ export default function ProductsPage() {
       selection_type: "SINGLE",
       is_required: false,
       max_limit: null,
+      free_threshold: 0,
+      extra_price: 0,
       options: []
     }]);
   };
@@ -249,7 +255,7 @@ export default function ProductsPage() {
         base_price: Number(formData.get("price")),
         category: formData.get("category"),
         product_type: formData.get("type"),
-        description: formData.get("description"),
+        description: productDescription,
         customization_type: customizationType,
         is_customizable: customizationType !== "NONE",
         imageUrl: imageUrl || "",
@@ -261,6 +267,8 @@ export default function ProductsPage() {
             selection_type: g.selection_type,
             is_required: g.is_required,
             max_limit: g.max_limit,
+            free_threshold: Number(g.free_threshold) || 0,
+            extra_price: Number(g.extra_price) || 0,
             display_order: g.display_order ?? i,
             options: g.options.map(o => ({
               name: o.name,
@@ -616,7 +624,7 @@ export default function ProductsPage() {
                 </div>
                 <div className="md:col-span-2 space-y-2 sm:space-y-3">
                   <Label htmlFor="description" className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-zinc-500">Description</Label>
-                  <Textarea id="description" name="description" placeholder="Product details..." className="min-h-[80px] sm:min-h-[100px] rounded-xl font-bold text-sm resize-none bg-zinc-50/50" />
+                  <Textarea id="description" name="description" value={productDescription} onChange={(e) => setProductDescription(e.target.value)} placeholder="Product details..." className="min-h-[80px] sm:min-h-[100px] rounded-xl font-bold text-sm resize-none bg-zinc-50/50" />
                 </div>
                 <div className="md:col-span-2 flex flex-col gap-4 border-t border-zinc-100 pt-4 sm:pt-6">
                   <div className="flex flex-col gap-3">
@@ -667,6 +675,16 @@ export default function ProductsPage() {
                                     <div>
                                       <h5 className="font-bold text-zinc-900">{group.name}</h5>
                                       <p className="text-[10px] text-zinc-500 font-medium uppercase tracking-wider">{group.selection_type} • {group.is_required ? "Required" : "Optional"}</p>
+                                      <div className="flex gap-4 mt-2">
+                                        <div className="flex flex-col gap-1">
+                                          <Label className="text-[9px] font-black uppercase text-amber-500">Free Units</Label>
+                                          <Input type="number" value={group.free_threshold || ""} onChange={(e) => updateManualGroup(gIdx, 'free_threshold', e.target.value)} className="h-7 w-20 text-xs font-bold" />
+                                        </div>
+                                        <div className="flex flex-col gap-1">
+                                          <Label className="text-[9px] font-black uppercase text-amber-500">Extra Price (₹)</Label>
+                                          <Input type="number" value={group.extra_price || ""} onChange={(e) => updateManualGroup(gIdx, 'extra_price', e.target.value)} className="h-7 w-20 text-xs font-bold" />
+                                        </div>
+                                      </div>
                                     </div>
                                     <Button type="button" variant="outline" size="sm" onClick={() => addOptionToGroup(gIdx)} className="h-7 text-xs font-bold bg-white">
                                       <Plus className="w-3 h-3 mr-1" /> Add Item
@@ -747,18 +765,29 @@ export default function ProductsPage() {
                                 />
                                 <Label htmlFor={`req-${gIdx}`} className="font-bold text-xs cursor-pointer">Is Required?</Label>
                               </div>
-                              {group.selection_type === "MULTI" && (
-                                <div className="space-y-2 col-span-2 md:col-span-1">
-                                  <Label className="text-xs font-bold">Max Limit</Label>
-                                  <Input 
-                                    type="number" 
-                                    value={group.max_limit || ""} 
-                                    onChange={(e) => updateManualGroup(gIdx, 'max_limit', e.target.value)} 
-                                    placeholder="e.g. 3" 
-                                    className="bg-white h-8 text-sm" 
                                   />
                                 </div>
                               )}
+                              <div className="space-y-2 col-span-2 md:col-span-1">
+                                <Label className="text-xs font-bold text-amber-500">Free Units</Label>
+                                <Input 
+                                  type="number" 
+                                  value={group.free_threshold || ""} 
+                                  onChange={(e) => updateManualGroup(gIdx, 'free_threshold', e.target.value)} 
+                                  placeholder="0" 
+                                  className="bg-white h-8 text-sm" 
+                                />
+                              </div>
+                              <div className="space-y-2 col-span-2 md:col-span-1">
+                                <Label className="text-xs font-bold text-amber-500">Extra Price (₹)</Label>
+                                <Input 
+                                  type="number" 
+                                  value={group.extra_price || ""} 
+                                  onChange={(e) => updateManualGroup(gIdx, 'extra_price', e.target.value)} 
+                                  placeholder="0" 
+                                  className="bg-white h-8 text-sm" 
+                                />
+                              </div>
                             </div>
 
                             <div className="bg-white p-3 rounded-lg border border-zinc-100">

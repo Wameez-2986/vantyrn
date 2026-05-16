@@ -78,6 +78,8 @@ export async function POST(request) {
               is_required: group.is_required || false,
               selection_type: group.selection_type || "SINGLE",
               max_selections: group.max_limit || null,
+              free_threshold: group.free_threshold || 0,
+              extra_price: group.extra_price || 0,
               display_order: group.display_order ?? gIdx,
               product_customization_options: {
                 create: (group.options || []).map((opt, oIdx) => ({

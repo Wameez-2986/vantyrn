@@ -28,7 +28,7 @@ export async function GET() {
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { name, category, groups } = body;
+    const { name, category, description, groups } = body;
 
     if (!name) {
       return NextResponse.json({ error: "Template name is required" }, { status: 400 });
@@ -38,12 +38,15 @@ export async function POST(request) {
       data: {
         name,
         category,
+        description,
         byo_template_groups: {
           create: groups?.map((g, index) => ({
             name: g.name,
             selection_type: g.selection_type || "SINGLE",
             is_required: g.is_required || false,
             max_limit: g.max_limit || null,
+            free_threshold: g.free_threshold || 0,
+            extra_price: g.extra_price || 0,
             display_order: g.display_order ?? index
           })) || []
         }
@@ -61,6 +64,55 @@ export async function POST(request) {
     return NextResponse.json(template);
   } catch (error) {
     console.error("Create Template Error:", error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}
+
+export async function PUT(request) {
+  try {
+    const body = await request.json();
+    const { id, name, category, description, groups } = body;
+
+    if (!id || !name) {
+      return NextResponse.json({ error: "Template ID and name are required" }, { status: 400 });
+    }
+
+    // Delete existing groups and recreate them to simplify sync
+    await prisma.byo_template_groups.deleteMany({
+      where: { template_id: id }
+    });
+
+    const template = await prisma.byo_templates.update({
+      where: { id },
+      data: {
+        name,
+        category,
+        description,
+        byo_template_groups: {
+          create: groups?.map((g, index) => ({
+            name: g.name,
+            selection_type: g.selection_type || "SINGLE",
+            is_required: g.is_required || false,
+            max_limit: g.max_limit || null,
+            free_threshold: g.free_threshold || 0,
+            extra_price: g.extra_price || 0,
+            display_order: g.display_order ?? index
+          })) || []
+        }
+      },
+      include: {
+        byo_template_groups: true
+      }
+    });
+
+    const admin = await getAdmin();
+    await logActivity("TEMPLATE_UPDATED", { 
+      templateId: template.id, 
+      name: template.name 
+    }, admin?.id);
+    return NextResponse.json(template);
+  } catch (error) {
+    console.error("Update Template Error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

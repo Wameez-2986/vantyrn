@@ -321,7 +321,8 @@ exports.Prisma.CustomersScalarFieldEnum = {
   failed_login_count: 'failed_login_count',
   last_failed_at: 'last_failed_at',
   captcha_required: 'captcha_required',
-  profile_pic_url: 'profile_pic_url'
+  profile_pic_url: 'profile_pic_url',
+  status: 'status'
 };
 
 exports.Prisma.Login_attempt_logsScalarFieldEnum = {
@@ -742,7 +743,9 @@ exports.Prisma.Product_customization_groupsScalarFieldEnum = {
   max_selections: 'max_selections',
   display_order: 'display_order',
   created_at: 'created_at',
-  updated_at: 'updated_at'
+  updated_at: 'updated_at',
+  extra_price: 'extra_price',
+  free_threshold: 'free_threshold'
 };
 
 exports.Prisma.Product_customization_optionsScalarFieldEnum = {
@@ -764,7 +767,8 @@ exports.Prisma.Byo_templatesScalarFieldEnum = {
   name: 'name',
   category: 'category',
   created_at: 'created_at',
-  updated_at: 'updated_at'
+  updated_at: 'updated_at',
+  description: 'description'
 };
 
 exports.Prisma.Byo_template_groupsScalarFieldEnum = {
@@ -774,7 +778,9 @@ exports.Prisma.Byo_template_groupsScalarFieldEnum = {
   selection_type: 'selection_type',
   is_required: 'is_required',
   max_limit: 'max_limit',
-  display_order: 'display_order'
+  display_order: 'display_order',
+  extra_price: 'extra_price',
+  free_threshold: 'free_threshold'
 };
 
 exports.Prisma.Vendor_assigned_templatesScalarFieldEnum = {
@@ -856,6 +862,17 @@ exports.PricingScope = exports.$Enums.PricingScope = {
   product: 'product'
 };
 
+exports.AccountStatus = exports.$Enums.AccountStatus = {
+  KYC_SUBMITTED: 'KYC_SUBMITTED',
+  UNDER_REVIEW: 'UNDER_REVIEW',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED',
+  SUSPENDED: 'SUSPENDED',
+  DISABLED: 'DISABLED',
+  ACTIVE: 'ACTIVE',
+  PENDING: 'PENDING'
+};
+
 exports.CustomizationType = exports.$Enums.CustomizationType = {
   NORMAL: 'NORMAL',
   BUILD_YOUR_OWN: 'BUILD_YOUR_OWN'
@@ -869,17 +886,6 @@ exports.VendorRejectReason = exports.$Enums.VendorRejectReason = {
   STAFF_UNAVAILABLE: 'STAFF_UNAVAILABLE',
   TECHNICAL_ISSUE: 'TECHNICAL_ISSUE',
   OTHER: 'OTHER'
-};
-
-exports.AccountStatus = exports.$Enums.AccountStatus = {
-  KYC_SUBMITTED: 'KYC_SUBMITTED',
-  UNDER_REVIEW: 'UNDER_REVIEW',
-  APPROVED: 'APPROVED',
-  REJECTED: 'REJECTED',
-  SUSPENDED: 'SUSPENDED',
-  DISABLED: 'DISABLED',
-  ACTIVE: 'ACTIVE',
-  PENDING: 'PENDING'
 };
 
 exports.CommissionModel = exports.$Enums.CommissionModel = {

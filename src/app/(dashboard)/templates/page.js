@@ -42,6 +42,7 @@ export default function TemplatesPage() {
   // For the builder inside the modal
   const [templateName, setTemplateName] = useState("");
   const [templateCategory, setTemplateCategory] = useState("");
+  const [templateDescription, setTemplateDescription] = useState("");
   const [groups, setGroups] = useState([]);
 
   const fetchTemplates = async () => {
@@ -66,6 +67,7 @@ export default function TemplatesPage() {
     setEditingTemplate(null);
     setTemplateName("");
     setTemplateCategory("");
+    setTemplateDescription("");
     setGroups([]);
     setIsTemplateModalOpen(true);
   };
@@ -74,6 +76,7 @@ export default function TemplatesPage() {
     setEditingTemplate(template);
     setTemplateName(template.name);
     setTemplateCategory(template.category || "");
+    setTemplateDescription(template.description || "");
     setGroups(template.byo_template_groups || []);
     setIsTemplateModalOpen(true);
   };
@@ -91,7 +94,9 @@ export default function TemplatesPage() {
       name: "", 
       selection_type: "SINGLE", 
       is_required: false, 
-      max_limit: null 
+      max_limit: null,
+      free_threshold: 0,
+      extra_price: 0
     }]);
   };
 
@@ -113,13 +118,17 @@ export default function TemplatesPage() {
 
     try {
       const payload = {
+        id: editingTemplate?.id,
         name: templateName,
         category: templateCategory,
+        description: templateDescription,
         groups: groups.map((g, i) => ({
           name: g.name,
           selection_type: g.selection_type,
           is_required: Boolean(g.is_required),
           max_limit: g.max_limit ? Number(g.max_limit) : null,
+          free_threshold: g.free_threshold ? Number(g.free_threshold) : 0,
+          extra_price: g.extra_price ? Number(g.extra_price) : 0,
           display_order: i
         }))
       };
@@ -282,6 +291,11 @@ export default function TemplatesPage() {
               </div>
             </div>
 
+            <div className="space-y-2">
+              <Label className="text-[10px] font-black uppercase tracking-widest text-swiggy-gray">Template Description (Auto-fills product details)</Label>
+              <Input value={templateDescription} onChange={(e) => setTemplateDescription(e.target.value)} placeholder="e.g. Delicious custom-built burger with your choice of premium ingredients." className="h-10 sm:h-11 rounded-xl" />
+            </div>
+
             <div className="space-y-4">
               <div className="flex items-center justify-between border-b border-zinc-50 pb-2">
                 <Label className="text-xs font-black uppercase tracking-widest text-swiggy-navy">Option Groups</Label>
@@ -327,18 +341,30 @@ export default function TemplatesPage() {
                         />
                         <Label htmlFor={`req-${index}`} className="text-xs font-bold cursor-pointer text-zinc-600">Required Selection</Label>
                       </div>
-                      {group.selection_type === "MULTI" && (
-                        <div className="space-y-2">
-                          <Label className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Max Selection</Label>
-                          <Input 
-                            type="number" 
-                            value={group.max_limit || ""} 
-                            onChange={(e) => updateGroup(index, 'max_limit', e.target.value)} 
-                            placeholder="e.g. 5" 
-                            className="bg-white h-9 text-sm rounded-lg" 
-                          />
                         </div>
                       )}
+                      
+                      <div className="space-y-2">
+                        <Label className="text-[9px] font-black uppercase tracking-widest text-amber-500">Free Units Threshold</Label>
+                        <Input 
+                          type="number" 
+                          value={group.free_threshold || ""} 
+                          onChange={(e) => updateGroup(index, 'free_threshold', e.target.value)} 
+                          placeholder="e.g. 2" 
+                          className="bg-white h-9 text-sm rounded-lg border-amber-100" 
+                        />
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label className="text-[9px] font-black uppercase tracking-widest text-amber-500">Extra Unit Price (₹)</Label>
+                        <Input 
+                          type="number" 
+                          value={group.extra_price || ""} 
+                          onChange={(e) => updateGroup(index, 'extra_price', e.target.value)} 
+                          placeholder="e.g. 15" 
+                          className="bg-white h-9 text-sm rounded-lg border-amber-100" 
+                        />
+                      </div>
                     </div>
                   </div>
                 ))}

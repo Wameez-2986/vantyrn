@@ -5,7 +5,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  schemas  = ["admin", "customer", "vendor_delivery", "auth"]
+  schemas  = ["admin", "auth", "customer", "vendor_delivery"]
 }
 
 model AdminUser {
@@ -296,6 +296,7 @@ model customers {
   last_failed_at     DateTime?            @map("last_failed_at") @db.Timestamptz(6)
   captcha_required   Boolean              @default(false) @map("captcha_required")
   profile_pic_url    String?
+  status             AccountStatus        @default(ACTIVE)
   addresses          addresses[]
   age_verifications  age_verifications?
   analytics_events   analytics_events[]
@@ -897,6 +898,8 @@ model product_customization_groups {
   display_order                 Int                             @default(0)
   created_at                    DateTime                        @default(now()) @db.Timestamptz(6)
   updated_at                    DateTime                        @default(now()) @db.Timestamptz(6)
+  extra_price                   Decimal                         @default(0) @db.Decimal(10, 2)
+  free_threshold                Int                             @default(0)
   products                      products                        @relation(fields: [product_id], references: [id], onDelete: Cascade)
   product_customization_options product_customization_options[]
 
@@ -926,6 +929,7 @@ model byo_templates {
   category                  String?                     @db.VarChar(100)
   created_at                DateTime                    @default(now()) @db.Timestamptz(6)
   updated_at                DateTime                    @default(now()) @db.Timestamptz(6)
+  description               String?
   byo_template_groups       byo_template_groups[]
   vendor_assigned_templates vendor_assigned_templates[]
 
@@ -940,6 +944,8 @@ model byo_template_groups {
   is_required    Boolean       @default(false)
   max_limit      Int?
   display_order  Int           @default(0)
+  extra_price    Decimal       @default(0) @db.Decimal(10, 2)
+  free_threshold Int           @default(0)
   byo_templates  byo_templates @relation(fields: [template_id], references: [id], onDelete: Cascade)
 
   @@schema("vendor_delivery")

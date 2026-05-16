@@ -13,7 +13,12 @@ import {
   Calendar,
   ShoppingBag,
   UserCheck,
-  UserMinus
+  UserMinus,
+  ShieldAlert,
+  Ban,
+  Flag,
+  MoreVertical,
+  AlertCircle
 } from "lucide-react";
 import { 
   useReactTable, 
@@ -41,6 +46,23 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { toast } from "sonner";
 import Link from "next/link";
 
 // Mock Data removed
@@ -54,6 +76,33 @@ export default function CustomersPage() {
   });
   const [globalFilter, setGlobalFilter] = useState("");
   const [typeFilter, setTypeFilter] = useState("ALL");
+  
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
+  const [newStatus, setNewStatus] = useState("");
+  const [statusReason, setStatusReason] = useState("");
+  const [updating, setUpdating] = useState(false);
+
+  const handleStatusUpdate = async () => {
+    if (!selectedCustomer || !newStatus) return;
+    try {
+      setUpdating(true);
+      const res = await fetch(`/api/customers/${selectedCustomer.id}/status`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus, reason: statusReason })
+      });
+      if (!res.ok) throw new Error("Failed to update status");
+      toast.success(`Customer status updated to ${newStatus}`);
+      setIsStatusModalOpen(false);
+      setSelectedCustomer(null);
+      setStatusReason("");
+    } catch (err) {
+      toast.error(err.message);
+    } finally {
+      setUpdating(false);
+    }
+  };
 
   const filteredData = useMemo(() => {
     if (!customers) return [];
@@ -121,6 +170,24 @@ export default function CustomersPage() {
       )
     },
     {
+      accessorKey: "status",
+      header: "Status",
+      cell: ({ row }) => {
+        const status = row.original.status || "ACTIVE";
+        const colorMap = {
+          ACTIVE: "bg-green-50 text-green-600 border-green-100",
+          SUSPENDED: "bg-red-50 text-red-600 border-red-100",
+          DISABLED: "bg-zinc-50 text-zinc-600 border-zinc-100",
+          PENDING: "bg-amber-50 text-amber-600 border-amber-100"
+        };
+        return (
+          <Badge className={`${colorMap[status] || colorMap.ACTIVE} font-black text-[9px] uppercase tracking-widest border`}>
+            {status}
+          </Badge>
+        );
+      }
+    },
+    {
       accessorKey: "spent",
       header: "Total Spent",
       cell: ({ row }) => (
@@ -131,11 +198,55 @@ export default function CustomersPage() {
       id: "actions",
       header: "Actions",
       cell: ({ row }) => (
-        <Link href={`/customers/${row.original.id}`}>
-          <Button variant="ghost" size="icon" className="h-9 w-9 hover:bg-swiggy-orange hover:text-white rounded-xl transition-all shadow-sm border border-zinc-50 hover:border-transparent">
-            <Eye className="h-4 w-4" />
-          </Button>
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link href={`/customers/${row.original.id}`}>
+            <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-zinc-100 rounded-lg">
+              <Eye className="h-4 w-4 text-zinc-500" />
+            </Button>
+          </Link>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-zinc-100 rounded-lg">
+                <MoreVertical className="h-4 w-4 text-zinc-500" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48 rounded-xl p-2">
+              <DropdownMenuLabel className="text-[10px] uppercase font-black tracking-widest text-zinc-400 px-2 py-1.5">Administrative</DropdownMenuLabel>
+              <DropdownMenuItem 
+                className="rounded-lg gap-2 cursor-pointer font-bold text-zinc-700 focus:bg-amber-50 focus:text-amber-600"
+                onClick={() => {
+                  setSelectedCustomer(row.original);
+                  setNewStatus("PENDING"); // Flagging as pending for review
+                  setIsStatusModalOpen(true);
+                }}
+              >
+                <Flag className="w-4 h-4" /> Flag for Review
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                className="rounded-lg gap-2 cursor-pointer font-bold text-red-600 focus:bg-red-50 focus:text-red-700"
+                onClick={() => {
+                  setSelectedCustomer(row.original);
+                  setNewStatus("SUSPENDED");
+                  setIsStatusModalOpen(true);
+                }}
+              >
+                <Ban className="w-4 h-4" /> Suspend Account
+              </DropdownMenuItem>
+              {row.original.status === "SUSPENDED" && (
+                <DropdownMenuItem 
+                  className="rounded-lg gap-2 cursor-pointer font-bold text-green-600 focus:bg-green-50 focus:text-green-700"
+                  onClick={() => {
+                    setSelectedCustomer(row.original);
+                    setNewStatus("ACTIVE");
+                    setIsStatusModalOpen(true);
+                  }}
+                >
+                  <UserCheck className="w-4 h-4" /> Reactivate
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       )
     }
   ], []);
@@ -282,6 +393,49 @@ export default function CustomersPage() {
           </div>
         </div>
       </div>
+
+      {/* Status Update Modal */}
+      <Dialog open={isStatusModalOpen} onOpenChange={setIsStatusModalOpen}>
+        <DialogContent className="sm:max-w-[450px] p-0 overflow-hidden rounded-3xl">
+          <DialogHeader className="p-8 border-b border-zinc-50">
+            <DialogTitle className="text-xl font-black text-swiggy-navy uppercase flex items-center gap-3">
+               <AlertCircle className={`w-6 h-6 ${newStatus === 'SUSPENDED' ? 'text-red-500' : 'text-amber-500'}`} />
+               {newStatus === 'ACTIVE' ? 'Reactivate Customer' : newStatus === 'SUSPENDED' ? 'Suspend Customer' : 'Flag Customer'}
+            </DialogTitle>
+            <DialogDescription className="text-xs font-bold uppercase tracking-widest text-swiggy-gray mt-1">
+              Confirm administrative action for {selectedCustomer?.name}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="p-8 space-y-4">
+            <div className="space-y-2">
+              <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Reason for this action</Label>
+              <Input 
+                placeholder="e.g. Repeated cancellation, Fraudulent activity..." 
+                value={statusReason}
+                onChange={(e) => setStatusReason(e.target.value)}
+                className="h-12 rounded-xl"
+              />
+            </div>
+            <p className="text-[11px] font-bold text-zinc-500 leading-relaxed italic">
+              * This action will be logged in the system audit and may restrict the customer's ability to place orders.
+            </p>
+          </div>
+          <DialogFooter className="p-8 bg-zinc-50 border-t border-zinc-100 flex gap-2">
+            <Button variant="ghost" onClick={() => setIsStatusModalOpen(false)} className="flex-1 font-bold">Cancel</Button>
+            <Button 
+              onClick={handleStatusUpdate} 
+              disabled={updating}
+              className={`flex-1 font-black uppercase tracking-widest text-white shadow-lg ${
+                newStatus === 'SUSPENDED' ? 'bg-red-500 hover:bg-red-600 shadow-red-100' : 
+                newStatus === 'ACTIVE' ? 'bg-green-500 hover:bg-green-600 shadow-green-100' :
+                'bg-amber-500 hover:bg-amber-600 shadow-amber-100'
+              }`}
+            >
+              {updating ? "Processing..." : "Confirm Action"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
