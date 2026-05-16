@@ -58,7 +58,7 @@ export default function AdminLoginPage() {
       <div className="max-w-5xl w-full grid grid-cols-1 md:grid-cols-2 bg-white dark:bg-zinc-900 rounded-[2.5rem] shadow-2xl overflow-hidden relative z-10 border border-white/20 dark:border-zinc-800">
         
         {/* Left Side: Branding/Visuals (Hidden on small screens) */}
-        <div className="hidden md:flex flex-col justify-between p-12 bg-swiggy-navy relative overflow-hidden">
+        <div className="hidden md:flex flex-col justify-start gap-20 p-12 bg-swiggy-navy relative overflow-hidden">
           {/* Subtle patterns/glows */}
           <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(circle_at_top_right,rgba(252,128,25,0.15),transparent)] pointer-events-none" />
           
