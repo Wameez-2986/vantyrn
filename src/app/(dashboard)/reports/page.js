@@ -42,11 +42,73 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
-// Mock Data removed
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuTrigger 
+} from "@/components/ui/dropdown-menu";
+import { toast } from "sonner";
 
 export default function ReportsPage() {
-  const { data, loading } = useRealtime("/api/reports", { interval: 5000 }); // 5s for reports is enough
+  const [days, setDays] = useState(7);
+  const { data, loading } = useRealtime(`/api/reports?days=${days}`, { interval: 10000 });
   const [activeTab, setActiveTab] = useState("orders");
+
+  const datePresets = [
+    { label: "Last 7 Days", value: 7 },
+    { label: "Last 14 Days", value: 14 },
+    { label: "Last 30 Days", value: 30 },
+    { label: "Last 90 Days", value: 90 },
+  ];
+
+  const handleExport = () => {
+    try {
+      if (!data) return;
+      
+      let csvContent = "";
+      
+      if (activeTab === "orders") {
+        const headers = ["Date", "Total Orders", "Completed", "Cancelled", "Revenue"];
+        csvContent = [
+          headers.join(","),
+          ...data.orderTrend.map(row => [row.date, row.orders, row.completed, row.cancelled, row.revenue].join(","))
+        ].join("\n");
+      } else if (activeTab === "vendors") {
+        const headers = ["Vendor Name", "Orders", "Acceptance Rate", "SLA Breaches", "Rating", "Revenue"];
+        csvContent = [
+          headers.join(","),
+          ...data.vendorPerformance.map(v => [v.name, v.orders, v.acceptance, v.sla, v.rating, v.revenue.replace('₹', '').replace(',', '')].join(","))
+        ].join("\n");
+      } else {
+        // Default to order trend
+        const headers = ["Date", "Total Orders", "Completed", "Cancelled", "Revenue"];
+        csvContent = [
+          headers.join(","),
+          ...data.orderTrend.map(row => [row.date, row.orders, row.completed, row.cancelled, row.revenue].join(","))
+        ].join("\n");
+      }
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement("a");
+      const url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      link.setAttribute("download", `${activeTab}_report_${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      toast.success("Export Successful", {
+        description: `Downloaded ${activeTab} report as CSV`
+      });
+    } catch (error) {
+      console.error("Export Error:", error);
+      toast.error("Export Failed", {
+        description: "An error occurred while generating the report."
+      });
+    }
+  };
 
   if (loading) {
     return (
@@ -67,11 +129,30 @@ export default function ReportsPage() {
           <p className="text-sm text-swiggy-gray font-medium mt-1">Deep dive into business performance and operational efficiency</p>
         </div>
         <div className="flex items-center gap-3">
-           <Button variant="outline" className="rounded-xl font-bold h-12 gap-2 border-zinc-200 shadow-sm">
-             <Calendar className="w-4 h-4 text-swiggy-orange" />
-             Last 7 Days
-           </Button>
-           <Button className="bg-swiggy-navy hover:bg-swiggy-navy/90 text-white font-black px-6 rounded-xl h-12 shadow-lg">
+           <DropdownMenu>
+             <DropdownMenuTrigger asChild>
+               <Button variant="outline" className="rounded-xl font-bold h-12 gap-2 border-zinc-200 shadow-sm">
+                 <Calendar className="w-4 h-4 text-swiggy-orange" />
+                 {datePresets.find(p => p.value === days)?.label || "Select Range"}
+               </Button>
+             </DropdownMenuTrigger>
+             <DropdownMenuContent align="end" className="rounded-xl p-2 border-zinc-100 shadow-xl">
+               {datePresets.map((preset) => (
+                 <DropdownMenuItem 
+                   key={preset.value} 
+                   onClick={() => setDays(preset.value)}
+                   className="rounded-lg font-bold text-swiggy-navy focus:bg-swiggy-orange focus:text-white cursor-pointer py-2"
+                 >
+                   {preset.label}
+                 </DropdownMenuItem>
+               ))}
+             </DropdownMenuContent>
+           </DropdownMenu>
+
+           <Button 
+             onClick={handleExport}
+             className="bg-swiggy-navy hover:bg-swiggy-navy/90 text-white font-black px-6 rounded-xl h-12 shadow-lg"
+           >
              Export Data
            </Button>
         </div>

@@ -155,8 +155,14 @@ export default function VendorsPage() {
     }
   ], []);
 
+  const filteredVendors = useMemo(() => {
+    if (!vendors) return [];
+    if (statusFilter === "ALL") return vendors;
+    return vendors.filter(v => v.status === statusFilter);
+  }, [vendors, statusFilter]);
+
   const table = useReactTable({
-    data: vendors || [],
+    data: filteredVendors,
     columns,
     state: {
       globalFilter,

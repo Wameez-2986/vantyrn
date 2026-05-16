@@ -68,7 +68,6 @@ import {
 import Link from "next/link";
 
 const STATUS_CONFIG = {
-  PENDING: { label: "Pending Review", color: "bg-yellow-100 text-yellow-700 border-yellow-200" },
   PENDING_REVIEW: { label: "Pending Review", color: "bg-yellow-100 text-yellow-700 border-yellow-200" },
   APPROVED: { label: "Approved", color: "bg-green-100 text-green-700 border-green-200" },
   REJECTED: { label: "Rejected", color: "bg-red-100 text-red-700 border-red-200" },
@@ -95,6 +94,7 @@ export default function ProductsPage() {
   const [editImageFile, setEditImageFile] = useState(null);
   const [editImagePreview, setEditImagePreview] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [viewingImage, setViewingImage] = useState(null);
 
   // BYO Template States
   const [customizationType, setCustomizationType] = useState("NONE");
@@ -331,7 +331,12 @@ export default function ProductsPage() {
   const filteredData = useMemo(() => {
     if (!products) return [];
     if (statusFilter === "ALL") return products;
-    return products.filter(product => product.status === statusFilter);
+    return products.filter(product => {
+      if (statusFilter === "PENDING_REVIEW") {
+        return product.status === "PENDING_REVIEW" || product.status === "PENDING";
+      }
+      return product.status === statusFilter;
+    });
   }, [products, statusFilter]);
 
   // Column Definitions
@@ -342,7 +347,12 @@ export default function ProductsPage() {
       cell: ({ row }) => (
         <div className="flex items-center gap-3">
           {row.original.imageUrl ? (
-            <img src={row.original.imageUrl} alt={row.original.name} className="w-8 h-8 rounded object-cover border border-zinc-200" />
+            <img 
+              src={row.original.imageUrl} 
+              alt={row.original.name} 
+              className="w-8 h-8 rounded object-cover border border-zinc-200 cursor-pointer hover:ring-2 hover:ring-swiggy-orange transition-all" 
+              onClick={() => setViewingImage(row.original.imageUrl)}
+            />
           ) : (
             <div className="w-8 h-8 rounded bg-zinc-100 flex items-center justify-center">
               <Package className="w-4 h-4 text-zinc-500" />
@@ -396,7 +406,8 @@ export default function ProductsPage() {
       accessorKey: "status",
       header: "Status",
       cell: ({ row }) => {
-        const config = STATUS_CONFIG[row.original.status] || STATUS_CONFIG.PENDING;
+        const statusKey = row.original.status === "PENDING" ? "PENDING_REVIEW" : row.original.status;
+        const config = STATUS_CONFIG[statusKey] || STATUS_CONFIG.PENDING_REVIEW;
         return (
           <Badge className={`${config.color} border font-bold text-[10px] items-center gap-1`}>
             {config.label}
@@ -1010,6 +1021,27 @@ export default function ProductsPage() {
           </div>
         </div>
       </div>
+
+      {/* Image Viewer Modal */}
+      <Dialog open={!!viewingImage} onOpenChange={(open) => !open && setViewingImage(null)}>
+        <DialogContent className="sm:max-w-[600px] p-0 overflow-hidden bg-transparent border-none shadow-none" showCloseButton={false}>
+          <DialogTitle className="sr-only">Product Image Preview</DialogTitle>
+          <DialogDescription className="sr-only">
+            A high-resolution preview of the product image.
+          </DialogDescription>
+          <div className="relative group">
+            <img 
+              src={viewingImage} 
+              alt="Product Preview" 
+              className="w-full h-auto max-h-[80vh] object-contain rounded-2xl shadow-2xl" 
+            />
+            <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-300 pointer-events-none" />
+          </div>
+          <p className="text-center text-white font-medium mt-4 bg-black/50 backdrop-blur-md py-2 px-4 rounded-full w-fit mx-auto">
+            Product Image Preview
+          </p>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

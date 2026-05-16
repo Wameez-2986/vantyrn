@@ -14,7 +14,8 @@ import {
   ChevronRight,
   X,
   Package,
-  PackagePlus
+  PackagePlus,
+  Bell
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -26,6 +27,7 @@ const navItems = [
   { name: "Delivery Partners", icon: Bike, href: "/partners" },
   { name: "Customers", icon: Users, href: "/customers" },
   { name: "Orders", icon: Receipt, href: "/orders" },
+  { name: "Notifications", icon: Bell, href: "/notifications" },
   { name: "Reports", icon: BarChart3, href: "/reports" },
 ];
 

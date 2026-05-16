@@ -2,18 +2,21 @@ import { prisma } from "@/lib/prisma";
 import { getAdmin } from "@/lib/auth";
 import { NextResponse } from "next/server";
 
-export async function GET() {
+export async function GET(request) {
   const admin = await getAdmin();
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   try {
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    const { searchParams } = new URL(request.url);
+    const days = parseInt(searchParams.get("days") || "7");
+    
+    const rangeAgo = new Date();
+    rangeAgo.setDate(rangeAgo.getDate() - days);
 
     // 1. Order and Revenue Trend (Daily)
     const [orders, allVendors, allPartners, vendorSla, vendorRatings, riderRatings] = await Promise.all([
       prisma.orders.findMany({
-        where: { created_at: { gte: sevenDaysAgo } },
+        where: { created_at: { gte: rangeAgo } },
         select: { 
           created_at: true, 
           total_amount: true, 
@@ -50,7 +53,7 @@ export async function GET() {
     ]);
 
     const dailyData = {};
-    for (let i = 0; i < 7; i++) {
+    for (let i = 0; i < days; i++) {
       const d = new Date();
       d.setDate(d.getDate() - i);
       const dateStr = d.toISOString().split('T')[0].slice(5); // MM-DD
