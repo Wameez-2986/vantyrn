@@ -1,0 +1,234 @@
+"use client";
+
+import React, { useState, useEffect } from "react";
+import { useRealtime } from "@/hooks/use-realtime";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useParams, useRouter } from "next/navigation";
+import { 
+  ArrowLeft, 
+  User, 
+  Phone, 
+  Mail, 
+  MapPin, 
+  Calendar, 
+  ShieldCheck, 
+  ShoppingBag, 
+  Star,
+  MessageSquare,
+  Clock,
+  ExternalLink
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import Link from "next/link";
+
+// Mock Data removed
+
+export default function CustomerDetailPage() {
+  const params = useParams();
+  const router = useRouter();
+  const customerId = params.id;
+  
+  const { data: customer, loading } = useRealtime(`/api/customers/${customerId}`);
+
+  if (loading || !customer) {
+    return (
+      <div className="space-y-6 animate-in fade-in duration-500 pb-12">
+        <Skeleton className="h-20 w-full rounded-2xl" />
+        <Skeleton className="h-[600px] w-full rounded-3xl" />
+      </div>
+    );
+  }
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'DELIVERED': return 'bg-green-100 text-green-700 border-green-200';
+      case 'CANCELLED': return 'bg-red-100 text-red-700 border-red-200';
+      default: return 'bg-blue-100 text-blue-700 border-blue-200';
+    }
+  };
+
+  return (
+    <div className="space-y-6 animate-in fade-in duration-500 pb-12">
+      {/* Header */}
+      <div className="flex items-center gap-4">
+        <Button variant="ghost" size="icon" className="rounded-xl border border-zinc-200 shadow-sm" onClick={() => router.back()}>
+          <ArrowLeft className="w-5 h-5" />
+        </Button>
+        <div>
+          <div className="flex items-center gap-3">
+            <h1 className="text-3xl font-black text-swiggy-navy dark:text-white tracking-tight">{customer.fullName}</h1>
+            <Badge className={`${customer.isGuest ? 'bg-amber-100 text-amber-700 border-amber-200' : 'bg-emerald-100 text-emerald-700 border-emerald-200'} font-bold text-[10px] uppercase tracking-wider`}>
+              {customer.isGuest ? 'Guest' : 'Registered'}
+            </Badge>
+          </div>
+          <p className="text-sm text-swiggy-gray font-medium mt-1">Customer ID: {customer.id} • Joined on {customer.registrationDate}</p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Left Column: Profile & Verification */}
+        <div className="space-y-6">
+          <Card className="rounded-3xl border-zinc-100 shadow-sm overflow-hidden">
+             <CardHeader className="p-8 border-b border-zinc-50 flex flex-col items-center gap-4 text-center">
+                <Avatar className="w-24 h-24 rounded-full border-4 border-zinc-50 shadow-md">
+                  <AvatarFallback className="bg-swiggy-orange text-white text-3xl font-black">{customer.fullName.charAt(0)}</AvatarFallback>
+                </Avatar>
+                <div className="space-y-1">
+                  <CardTitle className="text-2xl font-black text-swiggy-navy uppercase tracking-tight">{customer.fullName}</CardTitle>
+                  <p className="text-sm font-bold text-swiggy-gray">{customer.email}</p>
+                </div>
+             </CardHeader>
+             <CardContent className="p-8 space-y-6">
+                <div className="space-y-4">
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-xl bg-zinc-50 border border-zinc-100 flex items-center justify-center">
+                      <Phone className="w-4 h-4 text-swiggy-orange" />
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Phone</p>
+                      <p className="text-sm font-bold text-swiggy-navy">{customer.phone}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-xl bg-zinc-50 border border-zinc-100 flex items-center justify-center">
+                      <Mail className="w-4 h-4 text-swiggy-orange" />
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Email</p>
+                      <p className="text-sm font-bold text-swiggy-navy">{customer.email}</p>
+                    </div>
+                  </div>
+                </div>
+             </CardContent>
+          </Card>
+
+          <Card className="rounded-3xl border-zinc-100 shadow-sm overflow-hidden border-swiggy-orange/10 bg-swiggy-orange/[0.02]">
+             <CardHeader className="p-8 pb-4">
+                <CardTitle className="text-sm font-black text-swiggy-navy uppercase tracking-widest flex items-center gap-2">
+                  <ShieldCheck className="w-5 h-5 text-swiggy-orange" /> Age Verification
+                </CardTitle>
+             </CardHeader>
+             <CardContent className="p-8 pt-0">
+                <div className="flex items-center justify-between mb-4">
+                   <Badge className="bg-emerald-500 text-white font-bold text-[10px] uppercase tracking-wider h-7">
+                     {customer.ageVerification.status}
+                   </Badge>
+                </div>
+                <div className="space-y-2">
+                  <p className="text-xs font-bold text-swiggy-navy">Document: <span className="text-swiggy-gray">{customer.ageVerification.documentType}</span></p>
+                  <p className="text-xs font-bold text-swiggy-navy">Expires: <span className="text-swiggy-gray">{customer.ageVerification.expiryDate}</span></p>
+                </div>
+             </CardContent>
+          </Card>
+        </div>
+
+        {/* Right Columns: Addresses, Orders, Feedback */}
+        <div className="lg:col-span-2 space-y-6">
+           <Tabs defaultValue="orders" className="space-y-6">
+              <TabsList className="bg-white dark:bg-zinc-900 border border-zinc-100 p-1 rounded-2xl h-14 shadow-sm w-full lg:w-fit">
+                <TabsTrigger value="orders" className="rounded-xl px-8 font-black text-xs uppercase tracking-widest h-full data-[state=active]:bg-swiggy-orange data-[state=active]:text-white transition-all">
+                  Order History
+                </TabsTrigger>
+                <TabsTrigger value="addresses" className="rounded-xl px-8 font-black text-xs uppercase tracking-widest h-full data-[state=active]:bg-swiggy-orange data-[state=active]:text-white transition-all">
+                  Saved Addresses
+                </TabsTrigger>
+                <TabsTrigger value="feedback" className="rounded-xl px-8 font-black text-xs uppercase tracking-widest h-full data-[state=active]:bg-swiggy-orange data-[state=active]:text-white transition-all">
+                  Feedback ({customer.feedback.length})
+                </TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="orders" className="animate-in slide-in-from-bottom-2 duration-300">
+                <Card className="rounded-3xl border-zinc-100 shadow-sm overflow-hidden">
+                   <CardContent className="p-0">
+                      <div className="divide-y divide-zinc-50">
+                        {customer.orders.map((order) => (
+                          <div key={order.id} className="p-6 hover:bg-zinc-50/50 transition-colors flex items-center justify-between">
+                            <div className="flex items-center gap-6">
+                               <div className="w-12 h-12 rounded-2xl bg-zinc-100 flex items-center justify-center border border-zinc-100 shadow-sm">
+                                  <ShoppingBag className="w-6 h-6 text-swiggy-navy" />
+                               </div>
+                               <div>
+                                  <div className="flex items-center gap-3">
+                                    <h4 className="font-black text-swiggy-navy uppercase tracking-tight">{order.vendor}</h4>
+                                    <Badge className={`${getStatusColor(order.status)} border font-bold text-[9px] uppercase tracking-widest`}>
+                                      {order.status}
+                                    </Badge>
+                                  </div>
+                                  <div className="flex items-center gap-4 mt-1">
+                                    <p className="text-xs font-bold text-swiggy-gray">{order.id}</p>
+                                    <span className="w-1 h-1 rounded-full bg-zinc-200" />
+                                    <p className="text-xs font-bold text-swiggy-gray uppercase">{order.date}</p>
+                                  </div>
+                               </div>
+                            </div>
+                            <div className="flex items-center gap-6">
+                               <div className="text-right">
+                                  <p className="text-lg font-black text-swiggy-navy">{order.amount}</p>
+                               </div>
+                               <Link href={`/orders/${order.id}`}>
+                                 <Button variant="ghost" size="icon" className="rounded-xl border border-zinc-200">
+                                   <ExternalLink className="w-4 h-4 text-swiggy-orange" />
+                                 </Button>
+                               </Link>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                   </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="addresses" className="animate-in slide-in-from-bottom-2 duration-300">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {customer.addresses.map((address, i) => (
+                    <Card key={i} className="rounded-3xl border-zinc-100 shadow-sm overflow-hidden">
+                       <CardHeader className="p-6 pb-2">
+                          <CardTitle className="text-xs font-black text-swiggy-navy uppercase tracking-widest flex items-center gap-2">
+                            <MapPin className="w-4 h-4 text-swiggy-orange" /> {address.type}
+                          </CardTitle>
+                       </CardHeader>
+                       <CardContent className="p-6 pt-0">
+                          <p className="text-sm font-bold text-swiggy-gray leading-relaxed">
+                            {address.detail}
+                          </p>
+                       </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </TabsContent>
+
+              <TabsContent value="feedback" className="animate-in slide-in-from-bottom-2 duration-300">
+                <div className="space-y-4">
+                  {customer.feedback.map((item, i) => (
+                    <Card key={i} className="rounded-3xl border-zinc-100 shadow-sm overflow-hidden">
+                       <CardContent className="p-6">
+                          <div className="flex items-start justify-between mb-4">
+                             <div>
+                                <h4 className="font-black text-swiggy-navy uppercase tracking-tight">{item.vendor}</h4>
+                                <p className="text-[10px] font-bold text-zinc-400 mt-0.5 uppercase tracking-widest">{item.date}</p>
+                             </div>
+                             <div className="flex items-center gap-1">
+                                {[...Array(5)].map((_, i) => (
+                                  <Star key={i} className={`w-3 h-3 ${i < item.rating ? 'fill-swiggy-orange text-swiggy-orange' : 'text-zinc-200'}`} />
+                                ))}
+                             </div>
+                          </div>
+                          <div className="p-4 rounded-2xl bg-zinc-50 border border-zinc-100 relative">
+                             <MessageSquare className="w-4 h-4 text-zinc-200 absolute -top-2 -left-2 fill-white" />
+                             <p className="text-sm font-bold text-swiggy-gray italic">"{item.comment}"</p>
+                          </div>
+                       </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </TabsContent>
+           </Tabs>
+        </div>
+      </div>
+    </div>
+  );
+}
