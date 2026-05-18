@@ -765,9 +765,6 @@ export default function ProductsPage() {
                                 />
                                 <Label htmlFor={`req-${gIdx}`} className="font-bold text-xs cursor-pointer">Is Required?</Label>
                               </div>
-                                  />
-                                </div>
-                              )}
                               <div className="space-y-2 col-span-2 md:col-span-1">
                                 <Label className="text-xs font-bold text-amber-500">Free Units</Label>
                                 <Input 

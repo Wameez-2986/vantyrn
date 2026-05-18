@@ -341,8 +341,6 @@ export default function TemplatesPage() {
                         />
                         <Label htmlFor={`req-${index}`} className="text-xs font-bold cursor-pointer text-zinc-600">Required Selection</Label>
                       </div>
-                        </div>
-                      )}
                       
                       <div className="space-y-2">
                         <Label className="text-[9px] font-black uppercase tracking-widest text-amber-500">Free Units Threshold</Label>
