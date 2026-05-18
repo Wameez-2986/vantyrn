@@ -5,8 +5,9 @@ import { getAdmin } from "@/lib/auth";
 
 export async function GET(request, { params }) {
   try {
+    const { id } = await params;
     const template = await prisma.byo_templates.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         byo_template_groups: {
           orderBy: { display_order: 'asc' }
@@ -26,6 +27,7 @@ export async function GET(request, { params }) {
 
 export async function PATCH(request, { params }) {
   try {
+    const { id } = await params;
     const body = await request.json();
     const { name, category, groups } = body;
 
@@ -35,7 +37,7 @@ export async function PATCH(request, { params }) {
     if (category !== undefined) updateData.category = category;
 
     const template = await prisma.byo_templates.update({
-      where: { id: params.id },
+      where: { id },
       data: updateData
     });
 
@@ -46,13 +48,13 @@ export async function PATCH(request, { params }) {
       // wait, products copy groups to `product_customization_groups`. So it's safe to recreate
       // template groups.
       await prisma.byo_template_groups.deleteMany({
-        where: { template_id: params.id }
+        where: { template_id: id }
       });
 
       if (groups.length > 0) {
         await prisma.byo_template_groups.createMany({
           data: groups.map((g, index) => ({
-            template_id: params.id,
+            template_id: id,
             name: g.name,
             selection_type: g.selection_type || "SINGLE",
             is_required: g.is_required || false,
@@ -64,13 +66,13 @@ export async function PATCH(request, { params }) {
     }
 
     const updatedTemplate = await prisma.byo_templates.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: { byo_template_groups: { orderBy: { display_order: 'asc' } } }
     });
 
     const admin = await getAdmin();
     await logActivity("TEMPLATE_UPDATED", { 
-      templateId: params.id, 
+      templateId: id, 
       name: updatedTemplate.name,
       updates: updateData 
     }, admin?.id);
@@ -83,11 +85,12 @@ export async function PATCH(request, { params }) {
 
 export async function DELETE(request, { params }) {
   try {
+    const { id } = await params;
     await prisma.byo_templates.delete({
-      where: { id: params.id }
+      where: { id }
     });
     const admin = await getAdmin();
-    await logActivity("TEMPLATE_DELETED", { templateId: params.id }, admin?.id);
+    await logActivity("TEMPLATE_DELETED", { templateId: id }, admin?.id);
     return NextResponse.json({ success: true });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });

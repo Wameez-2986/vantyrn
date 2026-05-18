@@ -15,14 +15,33 @@ export async function GET(request) {
             id: true,
             status: true,
             customers: {
-              select: { full_name: true, phone: true }
+              select: {
+                full_name: true,
+                profiles: {
+                  select: { phone_number: true }
+                }
+              }
             }
           }
         }
       }
     });
 
-    return NextResponse.json({ success: true, transactions });
+    const mappedTransactions = transactions.map(t => {
+      const customer = t.orders?.customers;
+      return {
+        ...t,
+        orders: t.orders ? {
+          ...t.orders,
+          customers: customer ? {
+            full_name: customer.full_name,
+            phone: customer.profiles?.phone_number || "N/A"
+          } : null
+        } : null
+      };
+    });
+
+    return NextResponse.json({ success: true, transactions: mappedTransactions });
   } catch (error) {
     console.error("Payment Transactions API Error:", error);
     return NextResponse.json(

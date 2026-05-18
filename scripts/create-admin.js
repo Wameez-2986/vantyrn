@@ -1,9 +1,13 @@
-const { PrismaClient } = require("@prisma/client");
+const { PrismaClient } = require("../src/generated/prisma/index.js");
+const { PrismaPg } = require("@prisma/adapter-pg");
+const pg = require("pg");
 const bcrypt = require("bcryptjs");
 const readline = require("readline");
+require("dotenv").config();
 
-// Using the generated path from schema.prisma if it exists, else default
-const prisma = new PrismaClient();
+const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
+const adapter = new PrismaPg(pool);
+const prisma = new PrismaClient({ adapter });
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -45,6 +49,7 @@ async function main() {
     }
   } finally {
     await prisma.$disconnect();
+    await pool.end();
     rl.close();
   }
 }

@@ -11,6 +11,7 @@ export async function GET(request, { params }) {
     const vendor = await prisma.vendors.findUnique({
       where: { id },
       include: {
+        profiles: true,
         vendor_kyc: true,
         vendor_bank_details: true,
         vendor_operating_hours: {
@@ -72,7 +73,7 @@ export async function GET(request, { params }) {
       id: vendor.id,
       businessName: vendor.business_name,
       ownerName: vendor.owner_name,
-      phone: vendor.phone,
+      phone: vendor.profiles?.phone_number || "N/A",
       email: vendor.email || "N/A",
       address: vendor.business_address || "No address provided",
       category: vendor.business_category || "General",
@@ -155,15 +156,24 @@ export async function PATCH(request, { params }) {
         return NextResponse.json({ error: "Business name, owner name, and phone are required." }, { status: 400 });
       }
 
+      // Normalize email (if email is 'N/A' or empty, treat it as null to avoid unique constraint issues)
+      const cleanEmail = (email && email.trim() !== "" && email.trim() !== "N/A") ? email.trim() : null;
+      const cleanPhone = phone.trim();
+
       await prisma.$transaction(async (tx) => {
-        // 1. Update Vendors
+        // 1. Get vendor details to find its associated profile_id
+        const vendorRecord = await tx.vendors.findUnique({
+          where: { id },
+          select: { profile_id: true }
+        });
+
+        // 2. Update Vendors
         await tx.vendors.update({
           where: { id },
           data: {
             business_name: businessName,
             owner_name: ownerName,
-            phone: phone,
-            email: email || null,
+            email: cleanEmail,
             business_category: category || null,
             business_address: address || null,
             latitude: latitude ? parseFloat(latitude) : null,
@@ -172,7 +182,37 @@ export async function PATCH(request, { params }) {
           }
         });
 
-        // 2. Update/Upsert Bank Details
+        // 3. Update associated Profile phone number ONLY if it has actually changed
+        if (vendorRecord?.profile_id) {
+          const currentProfile = await tx.profiles.findUnique({
+            where: { id: vendorRecord.profile_id },
+            select: { phone_number: true }
+          });
+          // Only push the update if the phone is genuinely different
+          if (currentProfile && currentProfile.phone_number !== cleanPhone) {
+            // Check if another profile already owns this phone number
+            const conflictingProfile = await tx.profiles.findFirst({
+              where: {
+                phone_number: cleanPhone,
+                id: { not: vendorRecord.profile_id }
+              },
+              select: { id: true }
+            });
+            if (conflictingProfile) {
+              throw new Error("This phone number is already registered to another user profile.");
+            }
+            await tx.profiles.update({
+              where: { id: vendorRecord.profile_id },
+              data: {
+                phone_number: cleanPhone
+              }
+            });
+          }
+        } else {
+          throw new Error("Vendor does not have an associated login profile. Please link a profile first.");
+        }
+
+        // 4. Update/Upsert Bank Details
         const bankDetailsExist = await tx.vendor_bank_details.findFirst({
           where: { vendor_id: id }
         });
@@ -202,7 +242,7 @@ export async function PATCH(request, { params }) {
           });
         }
 
-        // 3. Update Operating Hours
+        // 5. Update Operating Hours
         if (openTime && closeTime) {
           await tx.vendor_operating_hours.updateMany({
             where: { vendor_id: id },
@@ -337,6 +377,20 @@ export async function PATCH(request, { params }) {
     return NextResponse.json({ success: true, newStatus });
   } catch (error) {
     console.error("Vendor Update API Error:", error);
+    
+    // Handle Prisma Unique Constraint Errors gracefully
+    if (error.code === 'P2002') {
+      const target = error.meta?.target || [];
+      const msg = error.message || "";
+      if (target.includes('phone') || target.includes('phone_number') || msg.includes('phone') || msg.includes('phone_number')) {
+        return NextResponse.json({ error: "This phone number is already registered to another vendor or user profile." }, { status: 400 });
+      }
+      if (target.includes('email') || msg.includes('email')) {
+        return NextResponse.json({ error: "This email address is already registered to another vendor." }, { status: 400 });
+      }
+      return NextResponse.json({ error: `Unique constraint failed on: ${target.join(', ') || 'duplicate value exists'}` }, { status: 400 });
+    }
+    
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

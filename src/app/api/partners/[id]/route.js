@@ -12,6 +12,7 @@ export async function GET(request, { params }) {
     const rider = await prisma.riders.findUnique({
       where: { id },
       include: {
+        profiles: true
       }
     });
 
@@ -37,7 +38,7 @@ export async function GET(request, { params }) {
     const mappedRider = {
       id: rider.id,
       fullName: rider.name,
-      phone: rider.phone,
+      phone: rider.profiles?.phone_number || "N/A",
       email: `${rider.name.toLowerCase().replace(/\s+/g, '.')}@example.com`,
       profilePhoto: "https://via.placeholder.com/150",
       vehicleType: rider.vehicle_type || "Bike",

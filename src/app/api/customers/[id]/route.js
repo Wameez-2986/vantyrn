@@ -8,9 +8,14 @@ export async function GET(request, { params }) {
     const customer = await prisma.customers.findUnique({
       where: { id },
       include: {
+        profiles: true,
         orders: {
           include: {
-            vendors: true,
+            vendors: {
+              include: {
+                profiles: true
+              }
+            },
             feedback: true
           },
           orderBy: { created_at: 'desc' },
@@ -49,7 +54,7 @@ export async function GET(request, { params }) {
     const mappedCustomer = {
       id: customer.id,
       fullName: customer.full_name,
-      phone: customer.phone,
+      phone: customer.profiles?.phone_number || "N/A",
       email: customer.email || "N/A",
       profilePhoto: customer.profile_pic_url || "https://via.placeholder.com/150",
       registrationDate: customer.created_at.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),

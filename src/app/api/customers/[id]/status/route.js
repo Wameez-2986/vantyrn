@@ -5,7 +5,7 @@ import { getAdmin } from "@/lib/auth";
 
 export async function PATCH(request, { params }) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const body = await request.json();
     const { status, reason } = body;
 

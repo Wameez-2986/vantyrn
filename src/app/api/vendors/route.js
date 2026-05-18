@@ -11,7 +11,11 @@ export async function GET() {
         id: true,
         business_name: true,
         owner_name: true,
-        phone: true,
+        profiles: {
+          select: {
+            phone_number: true
+          }
+        },
         business_category: true,
         account_status: true,
         online_status: true,
@@ -25,7 +29,7 @@ export async function GET() {
       id: v.id,
       businessName: v.business_name,
       ownerName: v.owner_name,
-      phone: v.phone,
+      phone: v.profiles?.phone_number || "N/A",
       sfxStoreCode: v.sfx_store_code,
       category: v.business_category || "General",
       status: v.account_status.toUpperCase(),
@@ -79,13 +83,40 @@ export async function POST(request) {
     const vendorId = crypto.randomUUID();
 
     const result = await prisma.$transaction(async (tx) => {
-      // 1. Create Vendor
+      // 1. Check or Create Profile under Path A
+      let profileRecord = await tx.profiles.findUnique({
+        where: { phone_number: phone }
+      });
+
+      if (profileRecord) {
+        if (profileRecord.role === 'VENDOR') {
+          throw new Error("This phone number is already registered to a vendor account.");
+        }
+        if (!profileRecord.role) {
+          await tx.profiles.update({
+            where: { id: profileRecord.id },
+            data: { role: 'VENDOR' }
+          });
+        }
+      } else {
+        profileRecord = await tx.profiles.create({
+          data: {
+            id: crypto.randomUUID(),
+            firebase_uid: `vendor_${crypto.randomUUID().slice(0, 8)}`,
+            phone_number: phone,
+            role: 'VENDOR',
+            profile_status: 'PENDING'
+          }
+        });
+      }
+
+      // 2. Create Vendor linked to Profile
       const vendor = await tx.vendors.create({
         data: {
           id: vendorId,
+          profile_id: profileRecord.id,
           business_name: businessName,
           owner_name: ownerName,
-          phone: phone,
           email: email,
           business_category: category,
           business_address: address,

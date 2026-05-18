@@ -9,6 +9,7 @@ export async function GET() {
   try {
     const customers = await prisma.customers.findMany({
       include: {
+        profiles: true,
         _count: {
           select: { orders: true }
         },
@@ -25,7 +26,7 @@ export async function GET() {
         id: c.id,
         name: c.full_name || "Unknown",
         email: c.email || "N/A",
-        phone: c.phone,
+        phone: c.profiles?.phone_number || "N/A",
         isGuest: c.is_guest,
         registeredAt: c.created_at,
         orders: c._count.orders,

@@ -10,7 +10,7 @@ export async function GET(request, { params }) {
     // If it's a short ID (8 chars), find the full UUID first
     if (id.length === 8) {
       const results = await prisma.$queryRawUnsafe(
-        `SELECT id FROM "vendor_delivery"."orders" WHERE id::text LIKE $1 LIMIT 1`,
+        `SELECT id FROM "customer"."orders" WHERE id::text LIKE $1 LIMIT 1`,
         `${id.toLowerCase()}%`
       );
       if (results.length > 0) {
@@ -21,9 +21,21 @@ export async function GET(request, { params }) {
     const order = await prisma.orders.findUnique({
       where: { id: orderId },
       include: {
-        customers: true,
-        vendors: true,
-        riders: true,
+        customers: {
+          include: {
+            profiles: true
+          }
+        },
+        vendors: {
+          include: {
+            profiles: true
+          }
+        },
+        riders: {
+          include: {
+            profiles: true
+          }
+        },
         order_items: true,
       }
     });
@@ -67,19 +79,19 @@ export async function GET(request, { params }) {
       customer: {
         id: order.customers?.id || "N/A",
         name: order.customers?.full_name || "Unknown",
-        phone: order.customers?.phone || "N/A",
+        phone: order.customers?.profiles?.phone_number || "N/A",
         address: deliveryAddress
       },
       vendor: {
         id: order.vendors?.id || "N/A",
         name: order.vendors?.business_name || "Unknown",
-        phone: order.vendors?.phone || "N/A",
+        phone: order.vendors?.profiles?.phone_number || "N/A",
         address: order.vendors?.business_address || "No address provided"
       },
       partner: order.riders ? {
         id: order.riders.id,
         name: order.riders.name,
-        phone: order.riders.phone,
+        phone: order.riders.profiles?.phone_number || "N/A",
         status: order.riders.online_status?.toUpperCase() || "OFFLINE"
       } : null,
       items: order.order_items.map(item => ({

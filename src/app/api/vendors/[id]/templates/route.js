@@ -3,8 +3,9 @@ import { NextResponse } from "next/server";
 
 export async function GET(request, { params }) {
   try {
+    const { id } = await params;
     const assignments = await prisma.vendor_assigned_templates.findMany({
-      where: { vendor_id: params.id },
+      where: { vendor_id: id },
       include: {
         byo_templates: {
           include: {

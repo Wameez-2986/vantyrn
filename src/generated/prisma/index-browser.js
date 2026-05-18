@@ -309,7 +309,6 @@ exports.Prisma.Cart_itemsScalarFieldEnum = {
 
 exports.Prisma.CustomersScalarFieldEnum = {
   id: 'id',
-  phone: 'phone',
   email: 'email',
   full_name: 'full_name',
   is_guest: 'is_guest',
@@ -554,7 +553,6 @@ exports.Prisma.RidersScalarFieldEnum = {
   id: 'id',
   profile_id: 'profile_id',
   name: 'name',
-  phone: 'phone',
   vehicle_type: 'vehicle_type',
   account_status: 'account_status',
   online_status: 'online_status',
@@ -654,7 +652,6 @@ exports.Prisma.VendorsScalarFieldEnum = {
   id: 'id',
   business_name: 'business_name',
   owner_name: 'owner_name',
-  phone: 'phone',
   email: 'email',
   business_address: 'business_address',
   latitude: 'latitude',

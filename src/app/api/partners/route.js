@@ -4,13 +4,16 @@ import { NextResponse } from "next/server";
 export async function GET() {
   try {
     const riders = await prisma.riders.findMany({
+      include: {
+        profiles: true
+      },
       orderBy: { created_at: 'desc' }
     });
 
     const mappedRiders = riders.map(r => ({
       id: r.id,
       name: r.name,
-      phone: r.phone,
+      phone: r.profiles?.phone_number || "N/A",
       vehicle: r.vehicle_type || "Bicycle",
       status: r.account_status.toUpperCase(),
       isOnline: r.online_status?.toLowerCase() === 'online',
