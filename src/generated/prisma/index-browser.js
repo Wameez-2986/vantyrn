@@ -681,7 +681,8 @@ exports.Prisma.VendorsScalarFieldEnum = {
   city: 'city',
   pincode: 'pincode',
   delivery_provider: 'delivery_provider',
-  shadowfax_linked: 'shadowfax_linked'
+  shadowfax_linked: 'shadowfax_linked',
+  phone_verified: 'phone_verified'
 };
 
 exports.Prisma.Admin_notificationsScalarFieldEnum = {

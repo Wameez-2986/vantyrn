@@ -803,6 +803,7 @@ model vendors {
   pincode                    String?                      @db.VarChar(10)
   delivery_provider          String                       @default("SHADOWFAX") @db.VarChar(50)
   shadowfax_linked           Boolean                      @default(false)
+  phone_verified             Boolean                      @default(false)
   orders                     orders[]
   categories                 categories[]
   product_review_submissions product_review_submissions[]
