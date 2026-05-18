@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import crypto from "crypto";
 import { logActivity } from "@/lib/audit";
 import { getAdmin } from "@/lib/auth";
 
@@ -76,6 +77,8 @@ export async function GET(request, { params }) {
       address: vendor.business_address || "No address provided",
       category: vendor.business_category || "General",
       operatingHours: mappedHours.length > 0 ? mappedHours : "10:00 AM - 11:00 PM",
+      openTime: vendor.vendor_operating_hours?.[0]?.open_time || "09:00",
+      closeTime: vendor.vendor_operating_hours?.[0]?.close_time || "22:00",
       description: vendor.store_description || "Vendor registered on our platform.",
       status: vendor.account_status.toUpperCase(),
       kycStatus: vendor.account_status.toUpperCase(),
@@ -127,6 +130,98 @@ export async function PATCH(request, { params }) {
 
     const vendor = await prisma.vendors.findUnique({ where: { id } });
     if (!vendor) return NextResponse.json({ error: "Vendor not found" }, { status: 404 });
+
+    if (action === "UPDATE_DETAILS") {
+      const {
+        businessName,
+        ownerName,
+        phone,
+        email,
+        category,
+        address,
+        latitude,
+        longitude,
+        description,
+        openTime,
+        closeTime,
+        accountHolderName,
+        bankName,
+        accountNumber,
+        ifscCode,
+        upiId,
+      } = body;
+
+      if (!businessName || !ownerName || !phone) {
+        return NextResponse.json({ error: "Business name, owner name, and phone are required." }, { status: 400 });
+      }
+
+      await prisma.$transaction(async (tx) => {
+        // 1. Update Vendors
+        await tx.vendors.update({
+          where: { id },
+          data: {
+            business_name: businessName,
+            owner_name: ownerName,
+            phone: phone,
+            email: email || null,
+            business_category: category || null,
+            business_address: address || null,
+            latitude: latitude ? parseFloat(latitude) : null,
+            longitude: longitude ? parseFloat(longitude) : null,
+            store_description: description || null,
+          }
+        });
+
+        // 2. Update/Upsert Bank Details
+        const bankDetailsExist = await tx.vendor_bank_details.findFirst({
+          where: { vendor_id: id }
+        });
+
+        if (bankDetailsExist) {
+          await tx.vendor_bank_details.update({
+            where: { id: bankDetailsExist.id },
+            data: {
+              account_holder: accountHolderName || "",
+              bank_name: bankName || "",
+              account_number: accountNumber || "",
+              ifsc_code: ifscCode || "",
+              upi_id: upiId || null,
+            }
+          });
+        } else if (accountHolderName || bankName || accountNumber || ifscCode) {
+          await tx.vendor_bank_details.create({
+            data: {
+              id: crypto.randomUUID(),
+              vendor_id: id,
+              account_holder: accountHolderName || "",
+              bank_name: bankName || "",
+              account_number: accountNumber || "",
+              ifsc_code: ifscCode || "",
+              upi_id: upiId || null,
+            }
+          });
+        }
+
+        // 3. Update Operating Hours
+        if (openTime && closeTime) {
+          await tx.vendor_operating_hours.updateMany({
+            where: { vendor_id: id },
+            data: {
+              open_time: openTime,
+              close_time: closeTime,
+            }
+          });
+        }
+      });
+
+      const admin = await getAdmin();
+      await logActivity("VENDOR_DETAILS_UPDATE", { 
+        vendorId: id, 
+        businessName: businessName 
+      }, admin?.id);
+
+      return NextResponse.json({ success: true });
+    }
 
     if (action === "UPDATE_COMMISSION") {
       // Input Validation

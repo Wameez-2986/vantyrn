@@ -86,7 +86,8 @@ export async function GET(request, { params }) {
         status: s.status,
         date: s.created_at.toISOString().split('T')[0],
         orderId: s.order_id?.slice(0, 8).toUpperCase()
-      }))
+      })),
+      status: customer.status
     };
 
     return NextResponse.json(mappedCustomer);

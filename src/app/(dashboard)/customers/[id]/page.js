@@ -16,13 +16,37 @@ import {
   Star,
   MessageSquare,
   Clock,
-  ExternalLink
+  ExternalLink,
+  MoreVertical,
+  AlertCircle,
+  Ban,
+  Flag,
+  UserCheck,
+  UserMinus
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
@@ -33,7 +57,33 @@ export default function CustomerDetailPage() {
   const router = useRouter();
   const customerId = params.id;
   
-  const { data: customer, loading } = useRealtime(`/api/customers/${customerId}`);
+  const { data: customer, loading, mutate } = useRealtime(`/api/customers/${customerId}`);
+  
+  const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
+  const [newStatus, setNewStatus] = useState("");
+  const [statusReason, setStatusReason] = useState("");
+  const [updating, setUpdating] = useState(false);
+
+  const handleStatusUpdate = async () => {
+    if (!customer || !newStatus) return;
+    try {
+      setUpdating(true);
+      const res = await fetch(`/api/customers/${customer.id}/status`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus, reason: statusReason })
+      });
+      if (!res.ok) throw new Error("Failed to update status");
+      toast.success(`Customer status updated to ${newStatus}`);
+      setIsStatusModalOpen(false);
+      setStatusReason("");
+      mutate();
+    } catch (err) {
+      toast.error(err.message);
+    } finally {
+      setUpdating(false);
+    }
+  };
 
   if (loading || !customer) {
     return (
@@ -69,6 +119,23 @@ export default function CustomerDetailPage() {
               )}>
                 {customer.isGuest ? 'Guest User' : 'Registered'}
               </Badge>
+              {(() => {
+                const status = customer.status || "ACTIVE";
+                const colorMap = {
+                  ACTIVE: "bg-green-50 text-green-600 border-green-100",
+                  SUSPENDED: "bg-red-50 text-red-600 border-red-100",
+                  DISABLED: "bg-zinc-50 text-zinc-600 border-zinc-100",
+                  PENDING: "bg-amber-50 text-amber-600 border-amber-100"
+                };
+                return (
+                  <Badge className={cn(
+                    "font-black text-[10px] uppercase tracking-widest px-3 py-1 rounded-full border",
+                    colorMap[status] || colorMap.ACTIVE
+                  )}>
+                    {status}
+                  </Badge>
+                );
+              })()}
             </div>
             <div className="flex items-center gap-2 mt-1.5">
                <p className="text-[10px] sm:text-xs text-swiggy-gray font-bold uppercase tracking-widest">ID: {customer.id}</p>
@@ -77,8 +144,61 @@ export default function CustomerDetailPage() {
             </div>
           </div>
         </div>
-      </div>
 
+        <div className="flex items-center gap-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="rounded-xl border border-zinc-200 font-bold gap-2">
+                <MoreVertical className="w-4 h-4" /> Administrative Actions
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56 rounded-xl p-2 shadow-xl border border-zinc-100 bg-white">
+              <DropdownMenuLabel className="text-[10px] uppercase font-black tracking-widest text-zinc-400 px-2 py-1.5">Manage Account</DropdownMenuLabel>
+              {customer.status === "SUSPENDED" || customer.status === "DISABLED" ? (
+                <DropdownMenuItem 
+                  className="rounded-lg gap-2 cursor-pointer font-bold text-green-600 focus:bg-green-50 focus:text-green-700"
+                  onClick={() => {
+                    setNewStatus("ACTIVE");
+                    setIsStatusModalOpen(true);
+                  }}
+                >
+                  <UserCheck className="w-4 h-4" /> Reactivate Account
+                </DropdownMenuItem>
+              ) : (
+                <>
+                  <DropdownMenuItem 
+                    className="rounded-lg gap-2 cursor-pointer font-bold text-zinc-700 focus:bg-amber-50 focus:text-amber-600"
+                    onClick={() => {
+                      setNewStatus("PENDING");
+                      setIsStatusModalOpen(true);
+                    }}
+                  >
+                    <Flag className="w-4 h-4" /> Flag for Review
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    className="rounded-lg gap-2 cursor-pointer font-bold text-red-600 focus:bg-red-50 focus:text-red-700"
+                    onClick={() => {
+                      setNewStatus("SUSPENDED");
+                      setIsStatusModalOpen(true);
+                    }}
+                  >
+                    <Ban className="w-4 h-4" /> Suspend Account
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    className="rounded-lg gap-2 cursor-pointer font-bold text-zinc-600 focus:bg-zinc-50 focus:text-zinc-700"
+                    onClick={() => {
+                      setNewStatus("DISABLED");
+                      setIsStatusModalOpen(true);
+                    }}
+                  >
+                    <UserMinus className="w-4 h-4" /> Disable Account
+                  </DropdownMenuItem>
+                </>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </div>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column: Profile & Verification */}
         <div className="space-y-6">
@@ -310,6 +430,49 @@ export default function CustomerDetailPage() {
             </Tabs>
         </div>
       </div>
+
+      <Dialog open={isStatusModalOpen} onOpenChange={setIsStatusModalOpen}>
+        <DialogContent className="sm:max-w-[425px] rounded-3xl bg-white border border-zinc-100 shadow-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-black text-swiggy-navy uppercase tracking-tight flex items-center gap-2">
+              <AlertCircle className="w-5 h-5 text-swiggy-orange" /> Update Customer Status
+            </DialogTitle>
+            <DialogDescription className="text-sm font-medium text-zinc-500">
+              Confirm status change for customer <strong>{customer.fullName}</strong>. Provide a mandatory administrative explanation below.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="flex flex-col gap-2">
+              <Label className="text-xs font-black uppercase tracking-wider text-swiggy-gray ml-1">Target Status</Label>
+              <Badge className="w-fit font-black text-xs uppercase tracking-widest px-3 py-1 bg-zinc-100 text-zinc-800 rounded-full border border-zinc-200">
+                {newStatus}
+              </Badge>
+            </div>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="status-reason" className="text-xs font-black uppercase tracking-wider text-swiggy-gray ml-1">Reason for status update</Label>
+              <Input
+                id="status-reason"
+                placeholder="Enter justification..."
+                value={statusReason}
+                onChange={(e) => setStatusReason(e.target.value)}
+                className="h-12 rounded-xl border border-zinc-200 font-bold focus:border-swiggy-orange text-sm outline-none px-4"
+              />
+            </div>
+          </div>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button variant="outline" className="rounded-xl font-bold h-11 border-zinc-200" onClick={() => setIsStatusModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button 
+              className="rounded-xl font-bold h-11 bg-swiggy-orange hover:bg-swiggy-orange/90 text-white shadow-lg shadow-swiggy-orange/20"
+              onClick={handleStatusUpdate}
+              disabled={updating || !statusReason.trim()}
+            >
+              {updating ? "Updating..." : "Confirm Update"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

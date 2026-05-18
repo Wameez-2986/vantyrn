@@ -27,13 +27,16 @@ import {
   Hash,
   User as UserIcon,
   QrCode,
-  Landmark
+  Landmark,
+  Edit
 } from "lucide-react";
 import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api';
 import { toast } from "sonner";
 import { CommissionManagement } from "@/components/vendors/CommissionManagement";
+import LocationPicker from "@/components/LocationPicker";
 
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -124,11 +127,82 @@ export default function VendorDetailPage() {
   const router = useRouter();
   const vendorId = params.id;
   
-  const { data: vendor, loading } = useRealtime(`/api/vendors/${vendorId}`);
+  const { data: vendor, loading, mutate } = useRealtime(`/api/vendors/${vendorId}`);
   const [activeTab, setActiveTab] = useState("overview");
   const [isRejectDialogOpen, setIsRejectDialogOpen] = useState(false);
   const [rejectReason, setRejectReason] = useState("");
   const [isFlagDialogOpen, setIsFlagDialogOpen] = useState(false);
+
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editForm, setEditForm] = useState({
+    businessName: "",
+    ownerName: "",
+    phone: "",
+    email: "",
+    category: "",
+    address: "",
+    latitude: "",
+    longitude: "",
+    description: "",
+    openTime: "",
+    closeTime: "",
+    accountHolderName: "",
+    bankName: "",
+    accountNumber: "",
+    ifscCode: "",
+    upiId: "",
+  });
+  const [updatingDetails, setUpdatingDetails] = useState(false);
+
+  useEffect(() => {
+    if (vendor) {
+      setEditForm({
+        businessName: vendor.businessName || "",
+        ownerName: vendor.ownerName || "",
+        phone: vendor.phone || "",
+        email: vendor.email || "",
+        category: vendor.category || "",
+        address: vendor.address || "",
+        latitude: vendor.lat ? String(vendor.lat) : "",
+        longitude: vendor.lng ? String(vendor.lng) : "",
+        description: vendor.description || "",
+        openTime: vendor.openTime || "09:00",
+        closeTime: vendor.closeTime || "22:00",
+        accountHolderName: vendor.bankDetails?.accountHolder || "",
+        bankName: vendor.bankDetails?.bankName || "",
+        accountNumber: vendor.bankDetails?.accountNumber || "",
+        ifscCode: vendor.bankDetails?.ifscCode || "",
+        upiId: vendor.bankDetails?.upiId || "",
+      });
+    }
+  }, [vendor]);
+
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    if (!editForm.businessName || !editForm.ownerName || !editForm.phone) {
+      return toast.error("Business name, owner name, and phone are required.");
+    }
+    setUpdatingDetails(true);
+    try {
+      const res = await fetch(`/api/vendors/${vendorId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "UPDATE_DETAILS",
+          ...editForm,
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to update vendor details");
+      toast.success("Vendor details updated successfully!");
+      setIsEditModalOpen(false);
+      mutate();
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setUpdatingDetails(false);
+    }
+  };
 
   const [sfxCode, setSfxCode] = useState("");
   const [isLinking, setIsLinking] = useState(false);
@@ -322,24 +396,32 @@ export default function VendorDetailPage() {
   return (
     <div className="space-y-6 animate-in fade-in duration-500 pb-12">
       {/* Navigation & Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-        <Button variant="ghost" size="icon" className="rounded-xl border border-zinc-200 shrink-0" onClick={() => router.back()}>
-          <ArrowLeft className="w-5 h-5" />
-        </Button>
-        <div className="min-w-0">
-          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-            <h1 className="text-2xl sm:text-3xl font-black text-swiggy-navy dark:text-white tracking-tight truncate">{vendor.businessName}</h1>
-            {(() => {
-              const config = STATUS_CONFIG[vendor.status] || STATUS_CONFIG.DISABLED;
-              return (
-                <Badge className={`${config.color} font-bold text-[9px] sm:text-[10px] uppercase tracking-wider whitespace-nowrap`}>
-                  {config.label}
-                </Badge>
-              );
-            })()}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-start sm:items-center gap-4 min-w-0">
+          <Button variant="ghost" size="icon" className="rounded-xl border border-zinc-200 shrink-0" onClick={() => router.back()}>
+            <ArrowLeft className="w-5 h-5" />
+          </Button>
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+              <h1 className="text-2xl sm:text-3xl font-black text-swiggy-navy dark:text-white tracking-tight truncate">{vendor.businessName}</h1>
+              {(() => {
+                const config = STATUS_CONFIG[vendor.status] || STATUS_CONFIG.DISABLED;
+                return (
+                  <Badge className={`${config.color} font-bold text-[9px] sm:text-[10px] uppercase tracking-wider whitespace-nowrap`}>
+                    {config.label}
+                  </Badge>
+                );
+              })()}
+            </div>
+            <p className="text-xs sm:text-sm text-swiggy-gray font-medium mt-1 truncate">Vendor ID: {vendor.id} • Registered on March 20, 2026</p>
           </div>
-          <p className="text-xs sm:text-sm text-swiggy-gray font-medium mt-1 truncate">Vendor ID: {vendor.id} • Registered on March 20, 2026</p>
         </div>
+        <Button 
+          onClick={() => setIsEditModalOpen(true)} 
+          className="bg-swiggy-orange hover:bg-swiggy-orange/95 text-white font-black px-6 py-2 h-11 rounded-xl shadow-lg shadow-swiggy-orange/10 flex items-center gap-2 text-xs sm:text-sm whitespace-nowrap self-start sm:self-center"
+        >
+          <Edit className="w-4 h-4" /> Edit Details
+        </Button>
       </div>
 
       <Tabs defaultValue="overview" className="space-y-6" onValueChange={setActiveTab}>
@@ -1010,7 +1092,213 @@ export default function VendorDetailPage() {
         </DialogContent>
       </Dialog>
 
+      {/* Edit Vendor Details Dialog */}
+      <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+        <DialogContent className="sm:max-w-[700px] w-[95vw] max-h-[90vh] overflow-y-auto rounded-3xl bg-white border border-zinc-100 shadow-2xl p-0">
+          <DialogHeader className="p-8 pb-4 border-b border-zinc-50">
+            <DialogTitle className="text-2xl font-black text-swiggy-navy uppercase tracking-tight flex items-center gap-2">
+              <Edit className="w-6 h-6 text-swiggy-orange" /> Edit Vendor Details
+            </DialogTitle>
+            <DialogDescription className="text-sm font-medium text-zinc-500">
+              Modify the general business details and bank settlement information for <strong>{vendor.businessName}</strong>.
+            </DialogDescription>
+          </DialogHeader>
 
+          <form onSubmit={handleEditSubmit}>
+            <Tabs defaultValue="general" className="w-full">
+              <div className="px-8 border-b border-zinc-50 bg-zinc-50/50 py-2">
+                <TabsList className="bg-transparent border-0 gap-4 p-0">
+                  <TabsTrigger value="general" className="rounded-lg px-4 py-2 font-bold data-[state=active]:bg-white data-[state=active]:text-swiggy-navy data-[state=active]:shadow-sm text-xs sm:text-sm">
+                    General Info
+                  </TabsTrigger>
+                  <TabsTrigger value="bank" className="rounded-lg px-4 py-2 font-bold data-[state=active]:bg-white data-[state=active]:text-swiggy-navy data-[state=active]:shadow-sm text-xs sm:text-sm">
+                    Bank Details
+                  </TabsTrigger>
+                </TabsList>
+              </div>
+
+              <TabsContent value="general" className="p-8 space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="flex flex-col gap-2">
+                    <Label className="text-xs font-black uppercase tracking-wider text-swiggy-gray ml-1">Business Name</Label>
+                    <Input
+                      required
+                      placeholder="e.g. Swiggy Delights"
+                      value={editForm.businessName}
+                      onChange={(e) => setEditForm(prev => ({ ...prev, businessName: e.target.value }))}
+                      className="h-12 rounded-xl border border-zinc-200 font-bold focus:border-swiggy-orange text-sm px-4"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <Label className="text-xs font-black uppercase tracking-wider text-swiggy-gray ml-1">Owner Name</Label>
+                    <Input
+                      required
+                      placeholder="e.g. Syed Wameez"
+                      value={editForm.ownerName}
+                      onChange={(e) => setEditForm(prev => ({ ...prev, ownerName: e.target.value }))}
+                      className="h-12 rounded-xl border border-zinc-200 font-bold focus:border-swiggy-orange text-sm px-4"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <Label className="text-xs font-black uppercase tracking-wider text-swiggy-gray ml-1">Phone Number</Label>
+                    <Input
+                      required
+                      placeholder="e.g. +91 9876543210"
+                      value={editForm.phone}
+                      onChange={(e) => setEditForm(prev => ({ ...prev, phone: e.target.value }))}
+                      className="h-12 rounded-xl border border-zinc-200 font-bold focus:border-swiggy-orange text-sm px-4"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <Label className="text-xs font-black uppercase tracking-wider text-swiggy-gray ml-1">Email Address</Label>
+                    <Input
+                      type="email"
+                      placeholder="e.g. contact@business.com"
+                      value={editForm.email}
+                      onChange={(e) => setEditForm(prev => ({ ...prev, email: e.target.value }))}
+                      className="h-12 rounded-xl border border-zinc-200 font-bold focus:border-swiggy-orange text-sm px-4"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <Label className="text-xs font-black uppercase tracking-wider text-swiggy-gray ml-1">Business Category</Label>
+                    <Select
+                      value={editForm.category}
+                      onValueChange={(val) => setEditForm(prev => ({ ...prev, category: val }))}
+                    >
+                      <SelectTrigger className="h-12 rounded-xl border border-zinc-200 font-bold focus:border-swiggy-orange text-sm px-4">
+                        <SelectValue placeholder="Select Category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="South Indian">South Indian</SelectItem>
+                        <SelectItem value="North Indian">North Indian</SelectItem>
+                        <SelectItem value="Chinese">Chinese</SelectItem>
+                        <SelectItem value="Italian">Italian</SelectItem>
+                        <SelectItem value="Desserts">Desserts</SelectItem>
+                        <SelectItem value="Biryani">Biryani</SelectItem>
+                        <SelectItem value="Burgers & Pizzas">Burgers & Pizzas</SelectItem>
+                        <SelectItem value="Bakery">Bakery</SelectItem>
+                        <SelectItem value="General">General</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="flex flex-col gap-2">
+                      <Label className="text-xs font-black uppercase tracking-wider text-swiggy-gray ml-1">Open Time</Label>
+                      <Input
+                        type="time"
+                        value={editForm.openTime}
+                        onChange={(e) => setEditForm(prev => ({ ...prev, openTime: e.target.value }))}
+                        className="h-12 rounded-xl border border-zinc-200 font-bold focus:border-swiggy-orange text-sm px-4"
+                      />
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <Label className="text-xs font-black uppercase tracking-wider text-swiggy-gray ml-1">Close Time</Label>
+                      <Input
+                        type="time"
+                        value={editForm.closeTime}
+                        onChange={(e) => setEditForm(prev => ({ ...prev, closeTime: e.target.value }))}
+                        className="h-12 rounded-xl border border-zinc-200 font-bold focus:border-swiggy-orange text-sm px-4"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  <Label className="text-xs font-black uppercase tracking-wider text-swiggy-gray ml-1">Store Description</Label>
+                  <Textarea
+                    placeholder="Provide a brief store outline..."
+                    value={editForm.description}
+                    onChange={(e) => setEditForm(prev => ({ ...prev, description: e.target.value }))}
+                    className="min-h-[80px] rounded-xl border border-zinc-200 font-bold focus:border-swiggy-orange text-sm p-4"
+                  />
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  <Label className="text-xs font-black uppercase tracking-wider text-swiggy-gray ml-1">Store Location Map Coordinates & Address</Label>
+                  <LocationPicker
+                    latitude={editForm.latitude}
+                    longitude={editForm.longitude}
+                    onLocationChange={(lat, lng) => {
+                      setEditForm(prev => ({ ...prev, latitude: String(lat), longitude: String(lng) }));
+                    }}
+                    onAddressChange={(addr) => {
+                      setEditForm(prev => ({ ...prev, address: addr }));
+                    }}
+                  />
+                </div>
+              </TabsContent>
+
+              <TabsContent value="bank" className="p-8 space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="flex flex-col gap-2">
+                    <Label className="text-xs font-black uppercase tracking-wider text-swiggy-gray ml-1">Bank Name</Label>
+                    <Input
+                      placeholder="e.g. HDFC Bank"
+                      value={editForm.bankName}
+                      onChange={(e) => setEditForm(prev => ({ ...prev, bankName: e.target.value }))}
+                      className="h-12 rounded-xl border border-zinc-200 font-bold focus:border-swiggy-orange text-sm px-4"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <Label className="text-xs font-black uppercase tracking-wider text-swiggy-gray ml-1">Account Holder Name</Label>
+                    <Input
+                      placeholder="e.g. Syed Wameez"
+                      value={editForm.accountHolderName}
+                      onChange={(e) => setEditForm(prev => ({ ...prev, accountHolderName: e.target.value }))}
+                      className="h-12 rounded-xl border border-zinc-200 font-bold focus:border-swiggy-orange text-sm px-4"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <Label className="text-xs font-black uppercase tracking-wider text-swiggy-gray ml-1">Account Number</Label>
+                    <Input
+                      placeholder="e.g. 501002345678"
+                      value={editForm.accountNumber}
+                      onChange={(e) => setEditForm(prev => ({ ...prev, accountNumber: e.target.value }))}
+                      className="h-12 rounded-xl border border-zinc-200 font-bold focus:border-swiggy-orange text-sm px-4"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <Label className="text-xs font-black uppercase tracking-wider text-swiggy-gray ml-1">IFSC Code</Label>
+                    <Input
+                      placeholder="e.g. HDFC0000123"
+                      value={editForm.ifscCode}
+                      onChange={(e) => setEditForm(prev => ({ ...prev, ifscCode: e.target.value }))}
+                      className="h-12 rounded-xl border border-zinc-200 font-bold focus:border-swiggy-orange text-sm px-4"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2 md:col-span-2">
+                    <Label className="text-xs font-black uppercase tracking-wider text-swiggy-gray ml-1">UPI ID (Optional)</Label>
+                    <Input
+                      placeholder="e.g. wameez@oksbi"
+                      value={editForm.upiId}
+                      onChange={(e) => setEditForm(prev => ({ ...prev, upiId: e.target.value }))}
+                      className="h-12 rounded-xl border border-zinc-200 font-bold focus:border-swiggy-orange text-sm px-4"
+                    />
+                  </div>
+                </div>
+              </TabsContent>
+            </Tabs>
+
+            <DialogFooter className="p-8 border-t border-zinc-50 bg-zinc-50/20 gap-3 sm:gap-0">
+              <Button 
+                type="button" 
+                variant="outline" 
+                className="rounded-xl font-bold h-12 px-6 border-zinc-200" 
+                onClick={() => setIsEditModalOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button 
+                type="submit" 
+                className="rounded-xl font-bold h-12 px-8 bg-swiggy-orange hover:bg-swiggy-orange/90 text-white shadow-lg shadow-swiggy-orange/20"
+                disabled={updatingDetails}
+              >
+                {updatingDetails ? "Saving Changes..." : "Save Changes"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

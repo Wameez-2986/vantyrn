@@ -30,7 +30,7 @@ export async function GET() {
         registeredAt: c.created_at,
         orders: c._count.orders,
         spent: `₹${totalSpent.toLocaleString()}`,
-        status: "ACTIVE"
+        status: c.status
       };
     });
 

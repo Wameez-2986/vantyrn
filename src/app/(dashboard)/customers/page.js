@@ -62,6 +62,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import Link from "next/link";
 
@@ -212,27 +213,7 @@ export default function CustomersPage() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48 rounded-xl p-2">
               <DropdownMenuLabel className="text-[10px] uppercase font-black tracking-widest text-zinc-400 px-2 py-1.5">Administrative</DropdownMenuLabel>
-              <DropdownMenuItem 
-                className="rounded-lg gap-2 cursor-pointer font-bold text-zinc-700 focus:bg-amber-50 focus:text-amber-600"
-                onClick={() => {
-                  setSelectedCustomer(row.original);
-                  setNewStatus("PENDING"); // Flagging as pending for review
-                  setIsStatusModalOpen(true);
-                }}
-              >
-                <Flag className="w-4 h-4" /> Flag for Review
-              </DropdownMenuItem>
-              <DropdownMenuItem 
-                className="rounded-lg gap-2 cursor-pointer font-bold text-red-600 focus:bg-red-50 focus:text-red-700"
-                onClick={() => {
-                  setSelectedCustomer(row.original);
-                  setNewStatus("SUSPENDED");
-                  setIsStatusModalOpen(true);
-                }}
-              >
-                <Ban className="w-4 h-4" /> Suspend Account
-              </DropdownMenuItem>
-              {row.original.status === "SUSPENDED" && (
+              {row.original.status === "SUSPENDED" || row.original.status === "DISABLED" ? (
                 <DropdownMenuItem 
                   className="rounded-lg gap-2 cursor-pointer font-bold text-green-600 focus:bg-green-50 focus:text-green-700"
                   onClick={() => {
@@ -241,8 +222,41 @@ export default function CustomersPage() {
                     setIsStatusModalOpen(true);
                   }}
                 >
-                  <UserCheck className="w-4 h-4" /> Reactivate
+                  <UserCheck className="w-4 h-4" /> Reactivate Account
                 </DropdownMenuItem>
+              ) : (
+                <>
+                  <DropdownMenuItem 
+                    className="rounded-lg gap-2 cursor-pointer font-bold text-zinc-700 focus:bg-amber-50 focus:text-amber-600"
+                    onClick={() => {
+                      setSelectedCustomer(row.original);
+                      setNewStatus("PENDING"); // Flagging as pending for review
+                      setIsStatusModalOpen(true);
+                    }}
+                  >
+                    <Flag className="w-4 h-4" /> Flag for Review
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    className="rounded-lg gap-2 cursor-pointer font-bold text-red-600 focus:bg-red-50 focus:text-red-700"
+                    onClick={() => {
+                      setSelectedCustomer(row.original);
+                      setNewStatus("SUSPENDED");
+                      setIsStatusModalOpen(true);
+                    }}
+                  >
+                    <Ban className="w-4 h-4" /> Suspend Account
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    className="rounded-lg gap-2 cursor-pointer font-bold text-zinc-600 focus:bg-zinc-50 focus:text-zinc-700"
+                    onClick={() => {
+                      setSelectedCustomer(row.original);
+                      setNewStatus("DISABLED");
+                      setIsStatusModalOpen(true);
+                    }}
+                  >
+                    <UserMinus className="w-4 h-4" /> Disable Account
+                  </DropdownMenuItem>
+                </>
               )}
             </DropdownMenuContent>
           </DropdownMenu>
