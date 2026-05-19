@@ -34,6 +34,11 @@ export async function POST(request) {
       return NextResponse.json({ error: "Template name is required" }, { status: 400 });
     }
 
+    // Fetch all active vendors to auto-assign the template to everyone
+    const allVendors = await prisma.vendors.findMany({
+      select: { id: true }
+    });
+
     const template = await prisma.byo_templates.create({
       data: {
         name,
@@ -49,10 +54,16 @@ export async function POST(request) {
             extra_price: g.extra_price || 0,
             display_order: g.display_order ?? index
           })) || []
+        },
+        vendor_assigned_templates: {
+          create: allVendors.map(v => ({
+            vendor_id: v.id
+          }))
         }
       },
       include: {
-        byo_template_groups: true
+        byo_template_groups: true,
+        vendor_assigned_templates: true
       }
     });
 

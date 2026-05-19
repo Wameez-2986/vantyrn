@@ -1,28 +1,17 @@
-import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
 export async function GET() {
-  try {
-    const riders = await prisma.riders.findMany({
-      include: {
-        profiles: true
-      },
-      orderBy: { created_at: 'desc' }
-    });
+  return NextResponse.json({ error: "Not Found" }, { status: 404 });
+}
 
-    const mappedRiders = riders.map(r => ({
-      id: r.id,
-      name: r.name,
-      phone: r.profiles?.phone_number || "N/A",
-      vehicle: r.vehicle_type || "Bicycle",
-      status: r.account_status.toUpperCase(),
-      isOnline: r.online_status?.toLowerCase() === 'online',
-      rating: 4.5 // Mocking rating as it's not in schema
-    }));
+export async function POST() {
+  return NextResponse.json({ error: "Not Found" }, { status: 404 });
+}
 
-    return NextResponse.json(mappedRiders);
-  } catch (error) {
-    console.error("Partners API Error:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
+export async function PATCH() {
+  return NextResponse.json({ error: "Not Found" }, { status: 404 });
+}
+
+export async function DELETE() {
+  return NextResponse.json({ error: "Not Found" }, { status: 404 });
 }

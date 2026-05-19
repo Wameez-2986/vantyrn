@@ -175,18 +175,7 @@ export default function OrdersPage() {
         <span className="text-sm font-medium text-swiggy-navy">{row.original.vendorName}</span>
       )
     },
-    {
-      accessorKey: "rider",
-      header: "Rider",
-      cell: ({ row }) => (
-        <div className="flex items-center gap-2">
-          <Bike className="w-3.5 h-3.5 text-zinc-400" />
-          <span className={cn("text-xs font-bold uppercase tracking-tight", row.original.rider ? "text-swiggy-navy" : "text-amber-500 italic")}>
-            {row.original.rider || "Unassigned"}
-          </span>
-        </div>
-      )
-    },
+
     {
       accessorKey: "status",
       header: "Status",

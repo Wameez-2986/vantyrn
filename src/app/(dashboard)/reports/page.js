@@ -161,7 +161,7 @@ export default function ReportsPage() {
       <Tabs defaultValue="orders" className="space-y-6" onValueChange={setActiveTab}>
         <div className="flex items-center justify-start overflow-x-auto scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
           <TabsList className="bg-white dark:bg-zinc-900 border border-zinc-100 p-1 rounded-xl sm:rounded-2xl h-12 sm:h-14 shadow-sm inline-flex shrink-0">
-            {["orders", "revenue", "vendors", "partners"].map(tab => (
+            {["orders", "revenue", "vendors"].map(tab => (
               <TabsTrigger 
                 key={tab} 
                 value={tab} 
@@ -373,60 +373,7 @@ export default function ReportsPage() {
            </Card>
         </TabsContent>
 
-        {/* Partner Performance Tab */}
-        <TabsContent value="partners" className="animate-in slide-in-from-bottom-4 duration-500">
-           <Card className="rounded-2xl sm:rounded-3xl border-zinc-100 shadow-sm overflow-hidden">
-              <CardContent className="p-0">
-                 <div className="responsive-table-container">
-                    <div className="min-w-[900px]">
-                      <Table>
-                        <TableHeader className="bg-zinc-50">
-                            <TableRow>
-                              <TableHead className="font-black uppercase text-[10px] tracking-widest p-4 sm:p-6">Partner Name</TableHead>
-                              <TableHead className="font-black uppercase text-[10px] tracking-widest p-4 sm:p-6">Deliveries</TableHead>
-                              <TableHead className="font-black uppercase text-[10px] tracking-widest p-4 sm:p-6">On-Time Rate</TableHead>
-                              <TableHead className="font-black uppercase text-[10px] tracking-widest p-4 sm:p-6">Avg Time</TableHead>
-                              <TableHead className="font-black uppercase text-[10px] tracking-widest p-4 sm:p-6">Flags</TableHead>
-                              <TableHead className="font-right font-black uppercase text-[10px] tracking-widest p-4 sm:p-6 text-right">Actions</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {partnerPerformance.map((p) => (
-                              <TableRow key={p.id} className="hover:bg-zinc-50/50 transition-colors">
-                                  <TableCell className="p-4 sm:p-6">
-                                    <Link href={`/partners/${p.id}`} className="font-black text-swiggy-navy hover:text-swiggy-orange transition-colors">
-                                      {p.name}
-                                    </Link>
-                                  </TableCell>
-                                  <TableCell className="p-4 sm:p-6 font-bold">{p.completed}</TableCell>
-                                  <TableCell className="p-4 sm:p-6">
-                                    <Badge className="bg-emerald-50 text-emerald-600 border-none font-black text-[9px] sm:text-[10px]">{p.onTime}</Badge>
-                                  </TableCell>
-                                  <TableCell className="p-4 sm:p-6 font-bold flex items-center gap-1">
-                                    <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-swiggy-gray" />
-                                    {p.avgTime}
-                                  </TableCell>
-                                  <TableCell className="p-4 sm:p-6">
-                                    <Badge className={`${p.flags > 2 ? 'bg-red-50 text-red-500' : 'bg-zinc-50 text-zinc-400'} border-none font-black text-[9px] sm:text-[10px]`}>
-                                      {p.flags} Flags
-                                    </Badge>
-                                  </TableCell>
-                                  <TableCell className="p-4 sm:p-6 text-right">
-                                    <Link href={`/partners/${p.id}`}>
-                                        <Button variant="ghost" size="sm" className="font-bold text-swiggy-orange hover:bg-swiggy-orange/10 rounded-lg text-xs sm:text-sm">
-                                          View Detail
-                                        </Button>
-                                    </Link>
-                                  </TableCell>
-                              </TableRow>
-                            ))}
-                        </TableBody>
-                      </Table>
-                    </div>
-                 </div>
-              </CardContent>
-           </Card>
-        </TabsContent>
+
       </Tabs>
     </div>
   );

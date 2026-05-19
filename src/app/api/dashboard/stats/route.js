@@ -32,15 +32,12 @@ export async function GET() {
       }
     });
 
-    // 4. Delivery Partners (Online)
-    let activeRiders = 0;
+    // 4. Total Customers
+    let totalCustomers = 0;
     try {
-      activeRiders = await prisma.riders.count({
-        where: { online_status: { equals: 'ONLINE', mode: 'insensitive' } }
-      });
-    } catch {
-      // riders model may not exist or be in a different schema
-      activeRiders = 0;
+      totalCustomers = await prisma.customers.count();
+    } catch (e) {
+      console.error("Failed to count customers:", e);
     }
 
     // 5. Recent Orders
@@ -73,7 +70,7 @@ export async function GET() {
         { label: "Total Revenue", value: `₹${totalRevenue.toLocaleString()}`, change: "+0%", icon: "TrendingUp", color: "text-emerald-500", bg: "bg-emerald-50 dark:bg-emerald-950/30" },
         { label: "Active Vendors", value: activeVendors.toString(), change: "+0", icon: "ShoppingBag", color: "text-swiggy-orange", bg: "bg-swiggy-orange/10" },
         { label: "Orders Today", value: `+${ordersToday}`, change: "+0", icon: "Receipt", color: "text-blue-500", bg: "bg-blue-50 dark:bg-blue-950/30" },
-        { label: "Delivery Partners", value: activeRiders.toString(), change: "Live", icon: "Bike", color: "text-purple-500", bg: "bg-purple-50 dark:bg-purple-950/30" },
+        { label: "Total Customers", value: totalCustomers.toString(), change: "+0", icon: "Users", color: "text-purple-500", bg: "bg-purple-50 dark:bg-purple-950/30" },
       ],
       recentOrders: mappedOrders
     });

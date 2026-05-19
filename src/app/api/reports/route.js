@@ -33,10 +33,7 @@ export async function GET(request) {
         take: 100, // Limit to top 100 vendors for performance
         select: { id: true, business_name: true } 
       }),
-      prisma.riders.findMany({ 
-        take: 100, // Limit to top 100 riders for performance
-        select: { id: true, name: true } 
-      }),
+      Promise.resolve([]),
       prisma.vendor_sla_metrics.findMany({
         take: 100,
         select: { vendor_id: true, rejection_rate: true, breached_orders: true }
@@ -131,18 +128,7 @@ export async function GET(request) {
       };
     }).sort((a, b) => parseFloat(b.revenue.replace('₹','').replace(/,/g,'')) - parseFloat(a.revenue.replace('₹','').replace(/,/g,''))).slice(0, 10);
 
-    const partnerPerformance = allPartners.map(p => {
-      const rating = riderRatings.find(r => r.rider_id === p.id);
-      return {
-        id: p.id,
-        name: p.name,
-        completed: partnerMap[p.id]?.completed || 0,
-        onTime: "95%", // Logic for on-time could be complex, keeping placeholder
-        avgTime: "22m",
-        flags: 0,
-        rating: rating ? rating.avg_rating.toNumber() : 0
-      };
-    }).sort((a, b) => b.completed - a.completed).slice(0, 10);
+    const partnerPerformance = [];
 
     return NextResponse.json({
       orderTrend,

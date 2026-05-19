@@ -40,8 +40,8 @@ export default function NotificationsPage() {
   const [loading, setLoading] = useState(false);
 
   const handleSend = async () => {
-    if (!title || !message) {
-      toast.error("Please fill in both title and message");
+    if (!title) {
+      toast.error("Please fill in the title");
       return;
     }
 
@@ -138,7 +138,7 @@ export default function NotificationsPage() {
               {/* Message Input */}
               <div className="space-y-2">
                 <Label htmlFor="message" className="text-[10px] font-black uppercase tracking-widest text-swiggy-gray">
-                  Message Content
+                  Message Content (Optional)
                 </Label>
                 <Textarea 
                   id="message"
@@ -165,7 +165,7 @@ export default function NotificationsPage() {
               </div>
               <Button 
                 onClick={handleSend}
-                disabled={loading || !title || !message}
+                disabled={loading || !title}
                 className="w-full sm:w-auto bg-swiggy-orange hover:bg-swiggy-orange/90 text-white font-black px-8 h-10 sm:h-12 rounded-xl shadow-lg shadow-swiggy-orange/20 transition-all active:scale-95 disabled:opacity-50 text-sm uppercase tracking-widest"
               >
                 {loading ? (
@@ -235,7 +235,7 @@ export default function NotificationsPage() {
                     </div>
                   </div>
                   <p className="text-[11px] text-white/90 font-bold leading-relaxed line-clamp-3">
-                    {message || "Compose your message to see how it will appear on your users' devices..."}
+                    {message ? message : (title ? "" : "Compose your message to see how it will appear on your users' devices...")}
                   </p>
                 </div>
 

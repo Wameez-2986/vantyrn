@@ -208,11 +208,10 @@ export default function OrderDetailPage() {
       )}
 
       {/* Contacts Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
          {[
            { type: "Customer", data: order.customer, icon: User, href: `/customers/${order.customer.id}` },
            { type: "Vendor", data: order.vendor, icon: Store, href: `/vendors/${order.vendor.id}` },
-           { type: "Delivery Partner", data: order.partner, icon: Bike, href: order.partner ? `/partners/${order.partner.id}` : null },
          ].map((contact, i) => (
            <Card key={i} className="rounded-3xl border-zinc-100 shadow-sm overflow-hidden group">
               <CardHeader className="p-6 border-b border-zinc-50 bg-zinc-50/50 flex flex-row items-center justify-between">
@@ -243,11 +242,6 @@ export default function OrderDetailPage() {
                            <MapPin className="w-4 h-4 text-zinc-300 flex-shrink-0 mt-0.5" />
                            <p className="text-xs font-medium text-swiggy-gray leading-relaxed dark:text-zinc-500">{contact.data.address}</p>
                         </div>
-                      )}
-                      {contact.type === "Delivery Partner" && (
-                        <Badge variant="outline" className="bg-orange-50 text-orange-600 border-orange-100 font-black text-[9px] uppercase tracking-widest px-3 py-1">
-                          {contact.data.status.replace(/_/g, ' ')}
-                        </Badge>
                       )}
                    </div>
                  ) : (

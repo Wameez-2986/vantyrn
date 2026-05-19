@@ -331,7 +331,7 @@ export default function TemplatesPage() {
                           </SelectContent>
                         </Select>
                       </div>
-                      <div className="flex items-center gap-2 mt-1">
+                      <div className="flex items-center gap-2 mt-1 sm:col-span-2">
                         <input 
                           type="checkbox" 
                           id={`req-${index}`} 
@@ -340,28 +340,6 @@ export default function TemplatesPage() {
                           className="w-4 h-4 rounded border-zinc-300 text-swiggy-orange focus:ring-swiggy-orange" 
                         />
                         <Label htmlFor={`req-${index}`} className="text-xs font-bold cursor-pointer text-zinc-600">Required Selection</Label>
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <Label className="text-[9px] font-black uppercase tracking-widest text-amber-500">Free Units Threshold</Label>
-                        <Input 
-                          type="number" 
-                          value={group.free_threshold || ""} 
-                          onChange={(e) => updateGroup(index, 'free_threshold', e.target.value)} 
-                          placeholder="e.g. 2" 
-                          className="bg-white h-9 text-sm rounded-lg border-amber-100" 
-                        />
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <Label className="text-[9px] font-black uppercase tracking-widest text-amber-500">Extra Unit Price (₹)</Label>
-                        <Input 
-                          type="number" 
-                          value={group.extra_price || ""} 
-                          onChange={(e) => updateGroup(index, 'extra_price', e.target.value)} 
-                          placeholder="e.g. 15" 
-                          className="bg-white h-9 text-sm rounded-lg border-amber-100" 
-                        />
                       </div>
                     </div>
                   </div>

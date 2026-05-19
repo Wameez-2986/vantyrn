@@ -30,6 +30,7 @@ export default function DashboardPage() {
       case "ShoppingBag": return ShoppingBag;
       case "Receipt": return Receipt;
       case "Bike": return Bike;
+      case "Users": return Users;
       default: return TrendingUp;
     }
   };

@@ -61,7 +61,7 @@ export default function LandingPage() {
           {[
             { label: "Orders", icon: ShoppingBag, color: "text-blue-500" },
             { label: "Vendors", icon: LayoutDashboard, color: "text-emerald-500" },
-            { label: "Partners", icon: Bike, color: "text-purple-500" },
+            { label: "Customers", icon: Users, color: "text-purple-500" },
             { label: "Analytics", icon: Users, color: "text-swiggy-orange" }
           ].map((item) => (
             <div key={item.label} className="flex flex-col items-center gap-3 group px-4">

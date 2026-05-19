@@ -20,7 +20,6 @@ import { cn } from "@/lib/utils";
 const routeTitles = {
   "/dashboard": "Dashboard Overview",
   "/vendors": "Vendor Management",
-  "/partners": "Delivery Partners",
   "/customers": "Customer Base",
   "/orders": "Order History",
   "/reports": "Business Insights",
