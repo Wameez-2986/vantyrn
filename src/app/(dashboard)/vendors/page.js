@@ -203,6 +203,7 @@ export default function VendorsPage() {
     openTime: "",
     closeTime: "",
     description: "",
+    bannerImage: null,
     accountHolderName: "",
     bankName: "",
     accountNumber: "",
@@ -267,7 +268,7 @@ export default function VendorsPage() {
       setFormData({
         businessName: "", ownerName: "", phone: "", email: "", category: "",
         address: "", latitude: "", longitude: "", openTime: "", closeTime: "",
-        description: "", accountHolderName: "", bankName: "", accountNumber: "",
+        description: "", bannerImage: null, accountHolderName: "", bankName: "", accountNumber: "",
         ifscCode: "", upiId: "", govId: null, businessProof: null,
         panCard: null, addressProof: null
       });
@@ -433,6 +434,17 @@ export default function VendorsPage() {
                         value={formData.description}
                         onChange={handleInputChange}
                         className="min-h-[80px] rounded-xl border-zinc-200"
+                      />
+                    </div>
+                    <div className="md:col-span-2 p-4 rounded-2xl border-2 border-dashed border-zinc-100 space-y-2 hover:border-swiggy-orange/30 transition-colors">
+                      <Label htmlFor="bannerImage" className="font-bold block text-zinc-700">Banner Image (Optional)</Label>
+                      <p className="text-[10px] text-zinc-400">Choose a high-quality banner image for the restaurant storefront</p>
+                      <Input 
+                        id="bannerImage" 
+                        type="file" 
+                        accept="image/*"
+                        onChange={(e) => handleFileChange(e, "bannerImage")}
+                        className="cursor-pointer file:bg-swiggy-orange/10 file:text-swiggy-orange file:border-none file:font-bold file:rounded-lg file:px-3"
                       />
                     </div>
                   </div>
