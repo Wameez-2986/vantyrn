@@ -30,7 +30,6 @@ const navItems = [
   { name: "Orders", icon: Receipt, href: "/orders" },
   { name: "Notifications", icon: Bell, href: "/notifications" },
   { name: "Reports", icon: BarChart3, href: "/reports" },
-  { name: "Settings", icon: Settings, href: "/settings" },
 ];
 
 export default function Sidebar({ isOpen, onClose }) {
