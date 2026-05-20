@@ -470,21 +470,20 @@ export default function VendorDetailPage() {
           <div className="lg:col-span-2 space-y-6">
             {/* 1. Vendor Information Card */}
             <Card className="rounded-3xl border-zinc-100 shadow-sm overflow-hidden">
-              <div className="h-48 bg-zinc-100 relative group overflow-hidden">
-                <img src={vendor.bannerUrl} alt="Banner" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-                <div className="absolute top-4 right-4 h-8 px-3 rounded-full glass flex items-center gap-1.5 backdrop-blur-md">
-                   <div className={`w-2 h-2 rounded-full ${vendor.isOnline ? 'bg-green-500' : 'bg-red-500'}`} />
-                   <span className="text-[10px] font-black uppercase tracking-widest">{vendor.isOnline ? 'Online' : 'Offline'}</span>
-                </div>
-              </div>
-              <CardContent className="p-4 sm:p-8 relative -mt-8 sm:-mt-12">
-                <div className="flex flex-col sm:flex-row items-center sm:items-end gap-4 sm:gap-6 mb-8 text-center sm:text-left">
-                  <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-white p-1 shadow-lg shadow-zinc-200/50 border border-zinc-50 z-10">
-                    <img src={vendor.logoUrl} alt="Logo" className="w-full h-full rounded-xl object-cover" />
+              <CardContent className="p-4 sm:p-8">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8 text-center sm:text-left">
+                  <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
+                    <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-white p-1 shadow-lg shadow-zinc-200/50 border border-zinc-50 cursor-pointer" onClick={() => window.open(vendor.logoUrl, "_blank")}>
+                      <img src={vendor.logoUrl} alt="Logo" className="w-full h-full rounded-xl object-cover" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg sm:text-xl font-black text-swiggy-navy uppercase tracking-tight">{vendor.businessName}</h3>
+                      <p className="text-xs sm:text-sm font-medium text-swiggy-gray">{vendor.category} • Specialist</p>
+                    </div>
                   </div>
-                  <div className="flex-1 pb-1 sm:pb-2">
-                    <h3 className="text-lg sm:text-xl font-black text-swiggy-navy uppercase tracking-tight">{vendor.businessName}</h3>
-                    <p className="text-xs sm:text-sm font-medium text-swiggy-gray">{vendor.category} • Specialist</p>
+                  <div className="h-8 px-3 rounded-full border border-zinc-150 bg-zinc-50 flex items-center gap-1.5 shrink-0 self-center sm:self-end mb-1">
+                     <div className={`w-2 h-2 rounded-full ${vendor.isOnline ? 'bg-green-500' : 'bg-red-500'}`} />
+                     <span className="text-[10px] font-black uppercase tracking-widest text-zinc-600">{vendor.isOnline ? 'Online' : 'Offline'}</span>
                   </div>
                 </div>
 
