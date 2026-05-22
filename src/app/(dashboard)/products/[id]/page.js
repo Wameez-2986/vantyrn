@@ -268,7 +268,9 @@ export default function CustomizationManagerPage() {
               )}
             </div>
             <p className="text-sm font-medium text-swiggy-gray mb-2">Vendor: {product.vendorName} • Base Price: ₹{product.base_price}</p>
-            <Badge variant="outline" className="border-swiggy-orange text-swiggy-orange bg-orange-50 font-bold">Build Your Own Configurator</Badge>
+            <Badge variant="outline" className="border-swiggy-orange text-swiggy-orange bg-orange-50 font-bold">
+              {groups.some(g => g.id === "virtual-addons-group") ? "Direct Add-ons Configurator" : "Build Your Own Configurator"}
+            </Badge>
           </div>
         </div>
         
@@ -321,21 +323,25 @@ export default function CustomizationManagerPage() {
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-1 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity">
-                      <Button variant="ghost" size="icon" className="h-8 w-8 text-zinc-400 hover:text-zinc-900" disabled={index === 0} onClick={() => handleMoveGroup(index, -1)}>
-                        <ArrowUp className="w-4 h-4" />
-                      </Button>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 text-zinc-400 hover:text-zinc-900" disabled={index === groups.length - 1} onClick={() => handleMoveGroup(index, 1)}>
-                        <ArrowDown className="w-4 h-4" />
-                      </Button>
-                      <div className="w-px h-4 bg-zinc-200 mx-1"></div>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 text-swiggy-orange hover:text-swiggy-orange hover:bg-orange-50" onClick={() => { setEditingGroup(group); setIsGroupModalOpen(true); }}>
-                        <Edit className="w-4 h-4" />
-                      </Button>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50" onClick={() => { setItemToDelete({ type: 'group', id: group.id }); setIsDeleteModalOpen(true); }}>
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
+                    {group.id === "virtual-addons-group" ? (
+                      <Badge className="bg-blue-50 text-blue-700 border-blue-200 uppercase text-[10px] font-bold">Direct Add-ons (Read Only)</Badge>
+                    ) : (
+                      <div className="flex items-center gap-1 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Button variant="ghost" size="icon" className="h-8 w-8 text-zinc-400 hover:text-zinc-900" disabled={index === 0} onClick={() => handleMoveGroup(index, -1)}>
+                          <ArrowUp className="w-4 h-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon" className="h-8 w-8 text-zinc-400 hover:text-zinc-900" disabled={index === groups.length - 1} onClick={() => handleMoveGroup(index, 1)}>
+                          <ArrowDown className="w-4 h-4" />
+                        </Button>
+                        <div className="w-px h-4 bg-zinc-200 mx-1"></div>
+                        <Button variant="ghost" size="icon" className="h-8 w-8 text-swiggy-orange hover:text-swiggy-orange hover:bg-orange-50" onClick={() => { setEditingGroup(group); setIsGroupModalOpen(true); }}>
+                          <Edit className="w-4 h-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon" className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50" onClick={() => { setItemToDelete({ type: 'group', id: group.id }); setIsDeleteModalOpen(true); }}>
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    )}
                   </div>
 
                   {/* Options List */}
@@ -351,24 +357,28 @@ export default function CustomizationManagerPage() {
                                 <Badge variant="secondary" className="font-bold text-zinc-600 bg-zinc-100">+ ₹{option.price_modifier}</Badge>
                               )}
                             </div>
-                            <div className="flex items-center gap-1 opacity-0 group-hover/opt:opacity-100 transition-opacity">
-                              <Button variant="ghost" size="icon" className="h-7 w-7 text-zinc-400 hover:text-zinc-900" onClick={() => { setActiveGroupId(group.id); setEditingOption(option); setIsOptionModalOpen(true); }}>
-                                <Edit className="w-3.5 h-3.5" />
-                              </Button>
-                              <Button variant="ghost" size="icon" className="h-7 w-7 text-red-400 hover:text-red-600" onClick={() => { setItemToDelete({ type: 'option', id: option.id }); setIsDeleteModalOpen(true); }}>
-                                <Trash2 className="w-3.5 h-3.5" />
-                              </Button>
-                            </div>
+                            {group.id !== "virtual-addons-group" && (
+                              <div className="flex items-center gap-1 opacity-0 group-hover/opt:opacity-100 transition-opacity">
+                                <Button variant="ghost" size="icon" className="h-7 w-7 text-zinc-400 hover:text-zinc-900" onClick={() => { setActiveGroupId(group.id); setEditingOption(option); setIsOptionModalOpen(true); }}>
+                                  <Edit className="w-3.5 h-3.5" />
+                                </Button>
+                                <Button variant="ghost" size="icon" className="h-7 w-7 text-red-400 hover:text-red-600" onClick={() => { setItemToDelete({ type: 'option', id: option.id }); setIsDeleteModalOpen(true); }}>
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </Button>
+                              </div>
+                            )}
                           </div>
                         ))}
                       </div>
-                      <Button 
-                        variant="outline" 
-                        className="w-full border-dashed border-zinc-300 text-zinc-500 hover:border-swiggy-orange hover:text-swiggy-orange font-bold h-10"
-                        onClick={() => { setActiveGroupId(group.id); setEditingOption(null); setIsOptionModalOpen(true); }}
-                      >
-                        <Plus className="w-4 h-4 mr-2" /> Add Option
-                      </Button>
+                      {group.id !== "virtual-addons-group" && (
+                        <Button 
+                          variant="outline" 
+                          className="w-full border-dashed border-zinc-300 text-zinc-500 hover:border-swiggy-orange hover:text-swiggy-orange font-bold h-10"
+                          onClick={() => { setActiveGroupId(group.id); setEditingOption(null); setIsOptionModalOpen(true); }}
+                        >
+                          <Plus className="w-4 h-4 mr-2" /> Add Option
+                        </Button>
+                      )}
                     </div>
                   )}
                 </div>

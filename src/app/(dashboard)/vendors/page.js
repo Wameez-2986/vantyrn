@@ -203,7 +203,7 @@ export default function VendorsPage() {
     openTime: "",
     closeTime: "",
     description: "",
-    bannerImage: null,
+    logo: null,
     accountHolderName: "",
     bankName: "",
     accountNumber: "",
@@ -268,7 +268,7 @@ export default function VendorsPage() {
       setFormData({
         businessName: "", ownerName: "", phone: "", email: "", category: "",
         address: "", latitude: "", longitude: "", openTime: "", closeTime: "",
-        description: "", bannerImage: null, accountHolderName: "", bankName: "", accountNumber: "",
+        description: "", logo: null, accountHolderName: "", bankName: "", accountNumber: "",
         ifscCode: "", upiId: "", govId: null, businessProof: null,
         panCard: null, addressProof: null
       });
@@ -437,13 +437,13 @@ export default function VendorsPage() {
                       />
                     </div>
                     <div className="md:col-span-2 p-4 rounded-2xl border-2 border-dashed border-zinc-100 space-y-2 hover:border-swiggy-orange/30 transition-colors">
-                      <Label htmlFor="bannerImage" className="font-bold block text-zinc-700">Banner Image (Optional)</Label>
-                      <p className="text-[10px] text-zinc-400">Choose a high-quality banner image for the restaurant storefront</p>
+                      <Label htmlFor="logo" className="font-bold block text-zinc-700">Logo (Optional)</Label>
+                      <p className="text-[10px] text-zinc-400">Choose a high-quality logo for the restaurant profile</p>
                       <Input 
-                        id="bannerImage" 
+                        id="logo" 
                         type="file" 
                         accept="image/*"
-                        onChange={(e) => handleFileChange(e, "bannerImage")}
+                        onChange={(e) => handleFileChange(e, "logo")}
                         className="cursor-pointer file:bg-swiggy-orange/10 file:text-swiggy-orange file:border-none file:font-bold file:rounded-lg file:px-3"
                       />
                     </div>

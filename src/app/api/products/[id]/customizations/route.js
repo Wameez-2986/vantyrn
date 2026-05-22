@@ -21,6 +21,28 @@ export async function GET(request, { params }) {
       orderBy: { display_order: 'asc' }
     });
 
+    const directAddons = await prisma.product_addons.findMany({
+      where: { product_id: id }
+    });
+
+    if (directAddons.length > 0) {
+      const virtualGroup = {
+        id: "virtual-addons-group",
+        name: "Add-ons",
+        is_required: false,
+        selection_type: "MULTI",
+        display_order: optionGroups.length,
+        product_customization_options: directAddons.map(addon => ({
+          id: addon.id,
+          name: addon.name,
+          price_modifier: addon.price,
+          is_available: addon.is_active ?? true,
+          free_limit: addon.free_limit
+        }))
+      };
+      optionGroups.push(virtualGroup);
+    }
+
     return NextResponse.json(optionGroups);
   } catch (error) {
     console.error("Customizations API Error:", error);

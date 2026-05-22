@@ -9,7 +9,8 @@ export async function GET() {
     const products = await prisma.products.findMany({
       include: {
         vendors: { select: { business_name: true } },
-        product_images: { select: { url: true }, take: 1, orderBy: { sort_order: 'asc' } }
+        product_images: { select: { url: true }, take: 1, orderBy: { sort_order: 'asc' } },
+        product_addons: { select: { id: true } }
       },
       orderBy: { created_at: 'desc' }
     });
@@ -25,7 +26,7 @@ export async function GET() {
       time: p.created_at,
       description: p.description || "",
       imageUrl: p.product_images?.[0]?.url || "",
-      is_customizable: p.is_customizable || false
+      is_customizable: p.is_customizable || (p.product_addons?.length > 0)
     }));
 
     return NextResponse.json(mappedProducts);

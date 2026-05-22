@@ -14,7 +14,8 @@ export async function GET(request, { params }) {
       where: { id },
       include: {
         vendors: { select: { business_name: true } },
-        product_images: { select: { url: true }, take: 1, orderBy: { sort_order: 'asc' } }
+        product_images: { select: { url: true }, take: 1, orderBy: { sort_order: 'asc' } },
+        product_addons: { select: { id: true } }
       }
     });
 
@@ -32,7 +33,7 @@ export async function GET(request, { params }) {
       status: (product.review_status || "pending_review").toUpperCase(),
       description: product.description || "",
       imageUrl: product.product_images?.[0]?.url || "",
-      is_customizable: product.is_customizable || false
+      is_customizable: product.is_customizable || (product.product_addons?.length > 0)
     };
 
     return NextResponse.json(mappedProduct);

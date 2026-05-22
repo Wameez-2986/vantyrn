@@ -60,7 +60,7 @@ export async function POST(request) {
     const openTime = formData.get("openTime") || "09:00";
     const closeTime = formData.get("closeTime") || "22:00";
     const description = formData.get("description") || "";
-    const bannerImageFile = formData.get("bannerImage");
+    const logoFile = formData.get("logo");
 
     const accountHolderName = formData.get("accountHolderName");
     const bankName = formData.get("bankName");
@@ -74,12 +74,12 @@ export async function POST(request) {
     const addressProofFile = formData.get("addressProof");
 
     // Upload files to R2
-    const [govIdUrl, businessProofUrl, panCardUrl, addressProofUrl, bannerUrl] = await Promise.all([
+    const [govIdUrl, businessProofUrl, panCardUrl, addressProofUrl, logoUrl] = await Promise.all([
       uploadToR2(govIdFile, "kyc/gov_id"),
       uploadToR2(businessProofFile, "kyc/business_proof"),
       uploadToR2(panCardFile, "kyc/pan"),
       uploadToR2(addressProofFile, "kyc/address_proof"),
-      uploadToR2(bannerImageFile, "banners"),
+      uploadToR2(logoFile, "logos"),
     ]);
 
     const vendorId = crypto.randomUUID();
@@ -126,7 +126,7 @@ export async function POST(request) {
           longitude: longitude ? parseFloat(longitude) : null,
           store_description: description,
           account_status: 'PENDING',
-          banner_url: bannerUrl,
+          logo_url: logoUrl,
         }
       });
 
