@@ -252,18 +252,15 @@ model carts {
   id             String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   customer_id    String?      @db.Uuid
   vendor_id      String       @db.Uuid
-  is_guest       Boolean      @default(false)
   is_active      Boolean      @default(true) @map("is_active")
   expires_at     DateTime?    @db.Timestamptz(6)
   checked_out_at DateTime?    @map("checked_out_at") @db.Timestamptz(6)
   created_at     DateTime     @default(now()) @db.Timestamptz(6)
   updated_at     DateTime     @default(now()) @db.Timestamptz(6)
-  guest_id       String?      @db.VarChar(255)
   cart_items     cart_items[]
   customers      customers?   @relation(fields: [customer_id], references: [id], onDelete: Cascade)
 
   @@unique([customer_id, vendor_id])
-  @@unique([guest_id, vendor_id])
   @@schema("customer")
 }
 
@@ -284,9 +281,7 @@ model customers {
   id                 String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   email              String?              @unique @db.VarChar(255)
   full_name          String?              @db.VarChar(255)
-  is_guest           Boolean              @default(false)
   session_token      String?
-  guest_expires_at   DateTime?            @db.Timestamptz(6)
   created_at         DateTime             @default(now()) @db.Timestamptz(6)
   updated_at         DateTime             @default(now()) @db.Timestamptz(6)
   profile_id         String?              @unique @db.Uuid
@@ -334,15 +329,6 @@ model feedback {
   submitted_at DateTime  @default(now()) @db.Timestamptz(6)
   customers    customers @relation(fields: [customer_id], references: [id])
   orders       orders    @relation(fields: [order_id], references: [id], onDelete: Cascade)
-
-  @@schema("customer")
-}
-
-model guest_sessions {
-  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  guest_id   String   @unique @db.VarChar(255)
-  expires_at DateTime @db.Timestamptz(6)
-  created_at DateTime @default(now()) @db.Timestamptz(6)
 
   @@schema("customer")
 }

@@ -58,7 +58,7 @@ export async function GET(request, { params }) {
       email: customer.email || "N/A",
       profilePhoto: customer.profile_pic_url || "https://via.placeholder.com/150",
       registrationDate: customer.created_at.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
-      isGuest: customer.is_guest,
+      isGuest: false,
       addresses: customer.addresses.map(addr => ({
         type: addr.address_type || "Home",
         detail: `${addr.address_line1}${addr.address_line2 ? ', ' + addr.address_line2 : ''}, ${addr.city}, ${addr.state} - ${addr.postal_code}`

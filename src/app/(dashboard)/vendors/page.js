@@ -80,15 +80,23 @@ const STATUS_CONFIG = {
 };
 
 export default function VendorsPage() {
-  const { data: vendors, loading } = useRealtime("/api/vendors", {
-    toastConfig: {
-      new: (v) => `New Vendor Registration!`,
-      description: (v) => `${v.businessName} has registered.`
-    }
-  });
   const [globalFilter, setGlobalFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [pagination, setPagination] = useState({
+    pageIndex: 0,
+    pageSize: 10,
+  });
+
+  const { data: vendorsResponse, loading } = useRealtime(
+    `/api/vendors?page=${pagination.pageIndex + 1}&limit=${pagination.pageSize}&search=${encodeURIComponent(globalFilter)}&status=${statusFilter}`,
+    {
+      toastConfig: {
+        new: (v) => `New Vendor Registration!`,
+        description: (v) => `${v.businessName} has registered.`
+      }
+    }
+  );
 
   // Column Definitions
   const columns = useMemo(() => [
@@ -172,21 +180,24 @@ export default function VendorsPage() {
   ], []);
 
   const filteredVendors = useMemo(() => {
-    if (!vendors) return [];
-    if (statusFilter === "ALL") return vendors;
-    return vendors.filter(v => v.status === statusFilter);
-  }, [vendors, statusFilter]);
+    return vendorsResponse?.data || [];
+  }, [vendorsResponse]);
+
+  // Reset to first page when search or status filters change
+  useEffect(() => {
+    setPagination(prev => ({ ...prev, pageIndex: 0 }));
+  }, [globalFilter, statusFilter]);
 
   const table = useReactTable({
     data: filteredVendors,
     columns,
+    pageCount: vendorsResponse?.pagination?.totalPages ?? -1,
     state: {
-      globalFilter,
+      pagination,
     },
-    onGlobalFilterChange: setGlobalFilter,
+    onPaginationChange: setPagination,
+    manualPagination: true,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
   });
 
   const [currentStep, setCurrentStep] = useState(1);
@@ -670,7 +681,7 @@ export default function VendorsPage() {
         {/* Pagination */}
         <div className="flex items-center justify-between pt-4 border-t border-zinc-50">
           <p className="text-sm font-medium text-swiggy-gray">
-            Showing <span className="text-swiggy-navy font-bold">{table.getState().pagination.pageIndex + 1}</span> of <span className="text-swiggy-navy font-bold">{table.getPageCount()}</span> pages
+            Showing <span className="text-swiggy-navy font-bold">{table.getPageCount() <= 0 ? 0 : table.getState().pagination.pageIndex + 1}</span> of <span className="text-swiggy-navy font-bold">{table.getPageCount() <= 0 ? 0 : table.getPageCount()}</span> pages
           </p>
           <div className="flex items-center gap-2">
             <Button 

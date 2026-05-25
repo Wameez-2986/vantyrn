@@ -113,12 +113,6 @@ export default function CustomerDetailPage() {
           <div>
             <div className="flex items-center gap-3 flex-wrap">
               <h1 className="text-2xl sm:text-4xl font-black text-swiggy-navy dark:text-white tracking-tighter uppercase">{customer.fullName || "Customer"}</h1>
-              <Badge className={cn(
-                "font-black text-[10px] uppercase tracking-widest px-3 py-1 rounded-full border",
-                customer.isGuest ? 'bg-amber-50 text-amber-600 border-amber-100' : 'bg-emerald-50 text-emerald-600 border-emerald-100'
-              )}>
-                {customer.isGuest ? 'Guest User' : 'Registered'}
-              </Badge>
               {(() => {
                 const status = customer.status || "ACTIVE";
                 const colorMap = {

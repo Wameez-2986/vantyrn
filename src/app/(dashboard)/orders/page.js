@@ -110,42 +110,35 @@ const SlaTimer = ({ createdAt, status }) => {
 };
 
 export default function OrdersPage() {
-  const { data: orders, loading } = useRealtime("/api/orders", {
-    interval: 1000,
-    toastConfig: {
-      new: (o) => `New Order #${o.shortId} Received!`,
-      description: (o) => `Amount: ${o.amount}`
-    }
-  });
   const [globalFilter, setGlobalFilter] = useState("");
   const [quickFilter, setQuickFilter] = useState("ALL");
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [dateStart, setDateStart] = useState("");
   const [dateEnd, setDateEnd] = useState("");
+  const [pagination, setPagination] = useState({
+    pageIndex: 0,
+    pageSize: 10,
+  });
+
+  const { data: ordersResponse, loading } = useRealtime(
+    `/api/orders?page=${pagination.pageIndex + 1}&limit=${pagination.pageSize}&search=${encodeURIComponent(globalFilter)}&quickFilter=${quickFilter}&status=${statusFilter}`,
+    {
+      interval: 1000,
+      toastConfig: {
+        new: (o) => `New Order #${o.shortId} Received!`,
+        description: (o) => `Amount: ${o.amount}`
+      }
+    }
+  );
 
   const filteredData = useMemo(() => {
-    if (!orders) return [];
-    return orders.filter(order => {
-      // Quick Filter Tabs
-      if (quickFilter === "ACTIVE" && !["PAYMENT_SUCCESSFUL", "ACCEPTED", "PREPARING", "READY", "OUT_FOR_DELIVERY"].includes(order.status)) return false;
-      if (quickFilter === "FLAGGED" && !order.isFlagged) return false;
-      if (quickFilter === "COMPLETED" && order.status !== "DELIVERED") return false;
-      if (quickFilter === "CANCELLED" && order.status !== "CANCELLED") return false;
+    return ordersResponse?.data || [];
+  }, [ordersResponse]);
 
-      // Status Filter Dropdown
-      if (statusFilter !== "ALL") {
-        if (statusFilter === "FLAGGED") {
-          if (!order.isFlagged) return false;
-        } else if (statusFilter === "PENDING_VENDOR") {
-          return order.status === "PENDING_VENDOR" || order.status === "PAYMENT_SUCCESSFUL";
-        } else if (order.status !== statusFilter) {
-          return false;
-        }
-      }
-
-      return true;
-    });
-  }, [orders, quickFilter, statusFilter]);
+  // Reset to first page when search, tabs, or dropdown filters change
+  useEffect(() => {
+    setPagination(prev => ({ ...prev, pageIndex: 0 }));
+  }, [globalFilter, quickFilter, statusFilter]);
 
   const columns = useMemo(() => [
     {
@@ -227,13 +220,13 @@ export default function OrdersPage() {
   const table = useReactTable({
     data: filteredData,
     columns,
+    pageCount: ordersResponse?.pagination?.totalPages ?? -1,
     state: {
-      globalFilter,
+      pagination,
     },
-    onGlobalFilterChange: setGlobalFilter,
+    onPaginationChange: setPagination,
+    manualPagination: true,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
   });
 
@@ -362,7 +355,7 @@ export default function OrdersPage() {
         {/* Pagination */}
         <div className="flex items-center justify-between pt-4">
           <p className="text-sm font-bold text-swiggy-gray">
-            Showing <span className="text-swiggy-navy">{table.getState().pagination.pageIndex + 1}</span> of <span className="text-swiggy-navy">{table.getPageCount()}</span> pages
+            Showing <span className="text-swiggy-navy">{table.getPageCount() <= 0 ? 0 : table.getState().pagination.pageIndex + 1}</span> of <span className="text-swiggy-navy">{table.getPageCount() <= 0 ? 0 : table.getPageCount()}</span> pages
           </p>
           <div className="flex items-center gap-2">
             <Button 

@@ -69,14 +69,21 @@ import Link from "next/link";
 // Mock Data removed
 
 export default function CustomersPage() {
-  const { data: customers, loading } = useRealtime("/api/customers", {
-    toastConfig: {
-      new: (c) => `New Customer Signup!`,
-      description: (c) => `${c.name} just joined.`
-    }
-  });
   const [globalFilter, setGlobalFilter] = useState("");
-  const [typeFilter, setTypeFilter] = useState("ALL");
+  const [pagination, setPagination] = useState({
+    pageIndex: 0,
+    pageSize: 10,
+  });
+
+  const { data: customersResponse, loading } = useRealtime(
+    `/api/customers?page=${pagination.pageIndex + 1}&limit=${pagination.pageSize}&search=${encodeURIComponent(globalFilter)}`,
+    {
+      toastConfig: {
+        new: (c) => `New Customer Signup!`,
+        description: (c) => `${c.name} just joined.`
+      }
+    }
+  );
   
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
@@ -106,13 +113,13 @@ export default function CustomersPage() {
   };
 
   const filteredData = useMemo(() => {
-    if (!customers) return [];
-    return customers.filter(item => {
-      if (typeFilter === "GUEST") return item.isGuest;
-      if (typeFilter === "REGISTERED") return !item.isGuest;
-      return true;
-    });
-  }, [customers, typeFilter]);
+    return customersResponse?.data || [];
+  }, [customersResponse]);
+
+  // Reset to first page when search changes
+  useEffect(() => {
+    setPagination(prev => ({ ...prev, pageIndex: 0 }));
+  }, [globalFilter]);
 
   const columns = useMemo(() => [
     {
@@ -128,11 +135,10 @@ export default function CustomersPage() {
       cell: ({ row }) => (
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl bg-zinc-100 flex items-center justify-center border border-zinc-200 text-zinc-500 font-bold uppercase text-xs shadow-sm">
-            {row.original.isGuest ? <UserMinus className="w-4 h-4 text-zinc-400" /> : row.original.name.charAt(0)}
+            {row.original.name.charAt(0)}
           </div>
           <div>
             <span className="font-bold text-zinc-900 dark:text-white capitalize leading-none">{row.original.name}</span>
-            {row.original.isGuest && <p className="text-[9px] font-black text-amber-500 uppercase tracking-widest mt-0.5">Guest Account</p>}
           </div>
         </div>
       )
@@ -268,13 +274,13 @@ export default function CustomersPage() {
   const table = useReactTable({
     data: filteredData,
     columns,
+    pageCount: customersResponse?.pagination?.totalPages ?? -1,
     state: {
-      globalFilter,
+      pagination,
     },
-    onGlobalFilterChange: setGlobalFilter,
+    onPaginationChange: setPagination,
+    manualPagination: true,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
   });
 
 
@@ -283,35 +289,7 @@ export default function CustomersPage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl sm:text-3xl font-black text-swiggy-navy dark:text-white tracking-tight">Customer Directory</h1>
-          <p className="text-xs sm:text-sm text-swiggy-gray font-medium mt-1">Manage foodies, guest users, and loyalty data</p>
-        </div>
-        <div className="flex items-center gap-3">
-           <div className="p-1 bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-xl sm:rounded-2xl flex gap-1 shadow-sm overflow-x-auto scrollbar-hide">
-              <Button 
-                variant={typeFilter === 'ALL' ? 'secondary' : 'ghost'} 
-                size="sm" 
-                className={`rounded-lg sm:rounded-xl px-4 font-bold text-xs sm:text-sm ${typeFilter === 'ALL' ? 'bg-swiggy-orange text-white hover:bg-swiggy-orange/90' : ''}`}
-                onClick={() => setTypeFilter('ALL')}
-              >
-                All
-              </Button>
-              <Button 
-                variant={typeFilter === 'REGISTERED' ? 'secondary' : 'ghost'} 
-                size="sm" 
-                className={`rounded-lg sm:rounded-xl px-4 font-bold text-xs sm:text-sm ${typeFilter === 'REGISTERED' ? 'bg-swiggy-orange text-white hover:bg-swiggy-orange/90' : ''}`}
-                onClick={() => setTypeFilter('REGISTERED')}
-              >
-                Registered
-              </Button>
-              <Button 
-                variant={typeFilter === 'GUEST' ? 'secondary' : 'ghost'} 
-                size="sm" 
-                className={`rounded-lg sm:rounded-xl px-4 font-bold text-xs sm:text-sm ${typeFilter === 'GUEST' ? 'bg-swiggy-orange text-white hover:bg-swiggy-orange/90' : ''}`}
-                onClick={() => setTypeFilter('GUEST')}
-              >
-                Guest
-              </Button>
-           </div>
+          <p className="text-xs sm:text-sm text-swiggy-gray font-medium mt-1">Manage foodies and loyalty data</p>
         </div>
       </div>
 
@@ -383,7 +361,7 @@ export default function CustomersPage() {
         {/* Pagination */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4">
           <p className="text-xs sm:text-sm font-bold text-swiggy-gray">
-            Showing <span className="text-swiggy-navy">{table.getState().pagination.pageIndex + 1}</span> of <span className="text-swiggy-navy">{table.getPageCount()}</span> pages
+            Showing <span className="text-swiggy-navy">{table.getPageCount() <= 0 ? 0 : table.getState().pagination.pageIndex + 1}</span> of <span className="text-swiggy-navy">{table.getPageCount() <= 0 ? 0 : table.getPageCount()}</span> pages
           </p>
           <div className="flex items-center gap-2 w-full sm:w-auto">
             <Button 

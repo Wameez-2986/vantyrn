@@ -3,27 +3,54 @@ import { NextResponse } from "next/server";
 import { uploadToR2 } from "@/lib/cloudflare";
 import crypto from "crypto";
 
-export async function GET() {
+export async function GET(request) {
   try {
-    const vendors = await prisma.vendors.findMany({
-      take: 50,
-      select: {
-        id: true,
-        business_name: true,
-        owner_name: true,
-        profiles: {
-          select: {
-            phone_number: true
+    const { searchParams } = new URL(request.url);
+    const page = parseInt(searchParams.get("page") || "1");
+    const limit = parseInt(searchParams.get("limit") || "10");
+    const search = searchParams.get("search") || "";
+    const status = searchParams.get("status") || "ALL";
+
+    const where = {};
+    if (status !== "ALL") {
+      where.account_status = status.toUpperCase();
+    }
+    if (search) {
+      where.OR = [
+        { business_name: { contains: search, mode: 'insensitive' } },
+        { owner_name: { contains: search, mode: 'insensitive' } },
+        {
+          profiles: {
+            phone_number: { contains: search, mode: 'insensitive' }
           }
+        }
+      ];
+    }
+
+    const [vendors, total] = await Promise.all([
+      prisma.vendors.findMany({
+        where,
+        skip: (page - 1) * limit,
+        take: limit,
+        select: {
+          id: true,
+          business_name: true,
+          owner_name: true,
+          profiles: {
+            select: {
+              phone_number: true
+            }
+          },
+          business_category: true,
+          account_status: true,
+          online_status: true,
+          created_at: true,
+          sfx_store_code: true
         },
-        business_category: true,
-        account_status: true,
-        online_status: true,
-        created_at: true,
-        sfx_store_code: true
-      },
-      orderBy: { created_at: 'desc' }
-    });
+        orderBy: { created_at: 'desc' }
+      }),
+      prisma.vendors.count({ where })
+    ]);
 
     const mappedVendors = vendors.map(v => ({
       id: v.id,
@@ -33,11 +60,19 @@ export async function GET() {
       sfxStoreCode: v.sfx_store_code,
       category: v.business_category || "General",
       status: v.account_status.toUpperCase(),
-      kycStatus: v.account_status.toUpperCase(), // Using account_status as proxy
+      kycStatus: v.account_status.toUpperCase(),
       isOnline: v.online_status?.toLowerCase() === 'online'
     }));
 
-    return NextResponse.json(mappedVendors);
+    return NextResponse.json({
+      data: mappedVendors,
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit)
+      }
+    });
   } catch (error) {
     console.error("Vendors API Error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
